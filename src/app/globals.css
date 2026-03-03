@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+:root {
+  /* Light Mode */
+  --background: #ffffff;
+  --foreground: #09090b;
+
+  --card: #f4f4f5;
+  --card-foreground: #09090b;
+
+  --primary: #2563eb;
+  --primary-foreground: #f8fafc;
+
+  --muted: #f4f4f5;
+  --muted-foreground: #52525b;
+
+  --border: #e4e4e7;
+}
+
+.dark {
+  /* Dark Mode */
+  --background: #09090b;
+  --foreground: #f8fafc;
+
+  --card: #18181b;
+  --card-foreground: #f8fafc;
+
+  --primary: #3b82f6;
+  --primary-foreground: #09090b;
+
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+
+  --border: #27272a;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}

@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  nwwd-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: new-wallpaper-who-dis
+    ports:
+      - "6767:3000"
+    volumes:
+      # Map the data folder where the SQLite DB or structured metadata will live
+      - ./data:/app/data
+      # Map the wallpapers folder from host to the app so user can supply existing directories easily
+      - ./wallpapers:/app/wallpapers
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
