@@ -10,6 +10,7 @@ import { Monitor, Images, Settings, User } from "lucide-react";
 import { readDb } from "@/lib/db";
 import Link from 'next/link';
 import { GlobalNav } from "@/components/GlobalNav";
+import { OnboardingWizard } from "@/components/OnboardingWizard";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -55,6 +56,9 @@ export default async function Home() {
 
       <GlobalNav title="New Wallpaper Who Dis" />
 
+      {/* Onboarding Wizard Interception */}
+      <OnboardingWizard hasCompletedOnboarding={!!settings.hasCompletedOnboarding} />
+
       {/* Main Content Dashboard */}
       <main className="container mx-auto px-4 pt-12 pb-24">
 
@@ -75,7 +79,7 @@ export default async function Home() {
             <UploadDropzone />
           </div>
 
-          <div className="relative p-6 rounded-xl border border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-md shadow-sm transition hover:shadow-md flex flex-col justify-between h-[450px] overflow-hidden group">
+          <Link href="/gallery" className="relative p-6 rounded-xl border border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-md shadow-sm transition-all hover:shadow-lg hover:border-[var(--primary)]/50 flex flex-col justify-between h-[450px] overflow-hidden group block">
 
             {/* Blurred Abstract Wallpaper Preview */}
             {previewImages.length > 0 && (
@@ -105,29 +109,29 @@ export default async function Home() {
                 <h3 className="text-xl font-bold mb-2">Gallery</h3>
                 <p className="text-[var(--muted-foreground)] mb-4 font-medium drop-shadow-sm">View your available library, delete unused images, and manage categorization tags</p>
               </div>
-              <Link href="/gallery" className="mt-auto">
-                <button className="w-full py-2 px-4 rounded-lg bg-[var(--primary)]/90 hover:bg-[var(--primary)] text-[var(--primary-foreground)] font-medium hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md backdrop-blur-md border border-[var(--primary)]/20">
+              <div className="mt-auto">
+                <div className="w-full py-2 px-4 rounded-lg bg-[var(--primary)]/90 group-hover:bg-[var(--primary)] text-[var(--primary-foreground)] font-medium text-center group-hover:scale-[1.02] group-active:scale-[0.98] transition-all shadow-md backdrop-blur-md border border-[var(--primary)]/20">
                   Browse Gallery
-                </button>
-              </Link>
+                </div>
+              </div>
             </div>
-          </div>
+          </Link>
 
           {/* Bottom Row: Profiles & Storage */}
-          <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-md shadow-sm transition hover:shadow-md flex flex-col justify-between min-h-[200px]">
+          <Link href="/profiles" className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-md shadow-sm transition-all hover:shadow-lg hover:border-[var(--primary)]/50 flex flex-col justify-between min-h-[200px] group block">
             <div>
-              <div className="h-10 w-10 bg-[var(--primary)]/10 rounded-lg flex items-center justify-center mb-4">
+              <div className="h-10 w-10 bg-[var(--primary)]/10 rounded-lg flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
                 <User className="text-[var(--primary)]" />
               </div>
               <h3 className="text-xl font-bold mb-2">Profiles & Slugs</h3>
               <p className="text-[var(--muted-foreground)] mb-4">Create mapping parameters and configure dynamic rotation schedules</p>
             </div>
-            <Link href="/profiles" className="mt-auto">
-              <button className="w-full py-2 px-4 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-medium hover:scale-105 active:scale-95 transition-transform">
+            <div className="mt-auto">
+              <div className="w-full py-2 px-4 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-medium text-center group-hover:scale-[1.02] group-active:scale-[0.98] transition-all shadow-md">
                 Configure
-              </button>
-            </Link>
-          </div>
+              </div>
+            </div>
+          </Link>
 
           <StorageWidget initialCount={imageCount} />
 
