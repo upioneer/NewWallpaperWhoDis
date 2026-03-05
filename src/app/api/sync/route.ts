@@ -24,14 +24,18 @@ export async function POST() {
                     const bundledFiles = await readdir(BUNDLED_DIR);
                     for (const bFile of bundledFiles) {
                         try {
-                            await copyFile(path.join(BUNDLED_DIR, bFile), path.join(UPLOAD_DIR, bFile));
+                            const sourcePath = path.join(BUNDLED_DIR, bFile);
+                            await copyFile(sourcePath, path.join(UPLOAD_DIR, bFile));
                             files.push(bFile); // Register it immediately for the sync pass below
+
+                            // Delete the original bundled file from the internal container to prevent duplication
+                            await unlink(sourcePath);
                         } catch (copyErr) {
-                            console.error(`Failed to clone bundled wallpaper ${bFile}`, copyErr);
+                            console.error(`Failed to clone or purge bundled wallpaper ${bFile}`, copyErr);
                         }
                     }
                     if (bundledFiles.length > 0) {
-                        console.log(`[Onboarding] Successfully cloned ${bundledFiles.length} default wallpapers into empty volume.`);
+                        console.log(`[Onboarding] Successfully cloned ${bundledFiles.length} default wallpapers into empty volume and purged internal bundles.`);
                     }
                 } catch {
                     // Bundled dir might not exist (e.g. running outside of docker or build missing), degrade gracefully
