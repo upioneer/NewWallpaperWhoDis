@@ -1,5 +1,4 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
+# New Wallpaper Who Dis
 ## Running the application
 
 The easiest way to deploy New Wallpaper Who Dis is by downloading the pre-configured `docker-compose.yml` file and running it. You do not need to download the full source code.
