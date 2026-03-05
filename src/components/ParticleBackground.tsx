@@ -17,6 +17,21 @@ export function ParticleBackground() {
         let animationFrameId: number;
         let particles: Array<{ x: number, y: number, vx: number, vy: number, size: number }> = [];
 
+        let primaryRgb = '37, 99, 235';
+        const updateThemeColor = () => {
+            if (typeof window !== 'undefined') {
+                const hex = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+                if (hex && hex.startsWith('#') && hex.length === 7) {
+                    const r = parseInt(hex.slice(1, 3), 16);
+                    const g = parseInt(hex.slice(3, 5), 16);
+                    const b = parseInt(hex.slice(5, 7), 16);
+                    primaryRgb = `${r}, ${g}, ${b}`;
+                }
+            }
+        };
+        updateThemeColor();
+        window.addEventListener('theme-changed', updateThemeColor);
+
         // Mouse tracking
         const mouse = { x: -1000, y: -1000 };
 
@@ -57,7 +72,7 @@ export function ParticleBackground() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const isDark = resolvedTheme === "dark";
 
-            const particleColor = isDark ? "rgba(255, 255, 255, 0.5)" : "rgba(37, 99, 235, 0.5)"; // White vs Blue-600
+            const particleColor = isDark ? "rgba(255, 255, 255, 0.5)" : `rgba(${primaryRgb}, 0.5)`;
             ctx.fillStyle = particleColor;
 
             particles.forEach((p, index) => {
@@ -105,7 +120,7 @@ export function ParticleBackground() {
                         }
 
                         ctx.beginPath();
-                        ctx.strokeStyle = isDark ? `rgba(255, 255, 255, ${strokeOpacity})` : `rgba(37, 99, 235, ${strokeOpacity})`;
+                        ctx.strokeStyle = isDark ? `rgba(255, 255, 255, ${strokeOpacity})` : `rgba(${primaryRgb}, ${strokeOpacity})`;
                         ctx.lineWidth = 1;
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
@@ -128,6 +143,7 @@ export function ParticleBackground() {
             window.removeEventListener("resize", resize);
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("mouseleave", handleMouseLeave);
+            window.removeEventListener("theme-changed", updateThemeColor);
             cancelAnimationFrame(animationFrameId);
         };
     }, [resolvedTheme]);

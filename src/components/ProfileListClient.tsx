@@ -1,18 +1,42 @@
 "use client";
 
 import { useState } from "react";
-import { Monitor, Plus, ExternalLink } from "lucide-react";
+import { Monitor, Plus, ExternalLink, Trash2 } from "lucide-react";
 import { CreateProfileModal } from "./CreateProfileModal";
 import { useRouter } from "next/navigation";
 
-export function ProfileListClient({ initialProfiles, categories, luminosities }: { initialProfiles: any[], categories: string[], luminosities: string[] }) {
+export function ProfileListClient({ initialProfiles, categories, luminosities, collections }: { initialProfiles: any[], categories: string[], luminosities: string[], collections: string[] }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingProfile, setEditingProfile] = useState<any>(null);
     const router = useRouter();
+
+    const openCreateModal = () => {
+        setEditingProfile(null);
+        setIsModalOpen(true);
+    };
+
+    const openEditModal = (profile: any) => {
+        setEditingProfile(profile);
+        setIsModalOpen(true);
+    };
 
     const handleSuccess = () => {
         setIsModalOpen(false);
         // Force Next.js to re-fetch the server component so the new profile appears instantly
         router.refresh();
+    };
+
+    const handleDelete = async (id: string, name: string) => {
+        if (!confirm(`Are you sure you want to delete the profile "${name}"?`)) return;
+
+        try {
+            const res = await fetch(`/api/profiles/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error("Failed to delete profile");
+            router.refresh();
+        } catch (err) {
+            console.error("Error deleting profile:", err);
+            alert("Error deleting profile.");
+        }
     };
 
     return (
@@ -23,7 +47,7 @@ export function ProfileListClient({ initialProfiles, categories, luminosities }:
                     <p className="text-[var(--muted-foreground)]">Manage your static wallpaper endpoints and their rotation rules</p>
                 </div>
                 <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={openCreateModal}
                     className="flex items-center gap-2 py-2 px-4 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-medium hover:scale-105 active:scale-95 transition-transform"
                 >
                     <Plus size={18} />
@@ -42,7 +66,7 @@ export function ProfileListClient({ initialProfiles, categories, luminosities }:
                             Profiles define what image shows up when someone visits a specific URL slug on your server
                         </p>
                         <button
-                            onClick={() => setIsModalOpen(true)}
+                            onClick={openCreateModal}
                             className="py-2 px-6 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-medium hover:brightness-110 transition-all cursor-pointer"
                         >
                             Create your first Profile
@@ -58,6 +82,11 @@ export function ProfileListClient({ initialProfiles, categories, luminosities }:
                                         /{profile.slug}
                                     </span>
                                     &bull; {profile.triggerType === 'time' ? `Rotates every ${profile.intervalMinutes} mins` : profile.triggerType === 'request' ? 'Rotates on every request' : 'Random rotation'}
+                                    {profile.filters?.collection && (
+                                        <span className="ml-1 font-medium text-[var(--primary)]">
+                                            &bull; Collection: {profile.filters.collection}
+                                        </span>
+                                    )}
                                 </p>
                             </div>
                             <div className="flex gap-2">
@@ -70,8 +99,18 @@ export function ProfileListClient({ initialProfiles, categories, luminosities }:
                                     <ExternalLink size={14} />
                                     View
                                 </a>
-                                <button className="px-4 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] transition-colors text-sm font-medium">
+                                <button
+                                    onClick={() => openEditModal(profile)}
+                                    className="px-4 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] transition-colors text-sm font-medium"
+                                >
                                     Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(profile.id, profile.name)}
+                                    className="p-2 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-colors"
+                                    title="Delete Profile"
+                                >
+                                    <Trash2 size={16} />
                                 </button>
                             </div>
                         </div>
@@ -85,6 +124,8 @@ export function ProfileListClient({ initialProfiles, categories, luminosities }:
                 onSuccess={handleSuccess}
                 orientations={categories}
                 luminosities={luminosities}
+                collections={collections}
+                initialData={editingProfile}
             />
         </>
     );

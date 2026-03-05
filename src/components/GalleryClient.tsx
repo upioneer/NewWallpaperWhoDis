@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { Trash2, Image as ImageIcon, Search, UploadCloud, Eye, X, RefreshCw } from "lucide-react";
+import { Trash2, Image as ImageIcon, Search, UploadCloud, Eye, X, RefreshCw, FolderPlus, Check, Folders, Edit3 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 
-export function GalleryClient({ initialImages }: { initialImages: any[] }) {
+export function GalleryClient({ initialImages, initialCollections }: { initialImages: any[], initialCollections: { name: string, images: string[] }[] }) {
     const [images, setImages] = useState(initialImages);
+    const [collections, setCollections] = useState(initialCollections);
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
     const [isSyncing, setIsSyncing] = useState<boolean>(false);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -14,6 +15,16 @@ export function GalleryClient({ initialImages }: { initialImages: any[] }) {
     const [filter, setFilter] = useState<string>("All"); // Orientation
     const [luminosityFilter, setLuminosityFilter] = useState<string>("All"); // Luminosity
     const [sortOrder, setSortOrder] = useState<string>("A > Z"); // Default sorting
+
+    // Collection Selection State
+    const [isSelectingCollection, setIsSelectingCollection] = useState(false);
+    const [selectedImages, setSelectedImages] = useState<string[]>([]);
+    const [editingCollectionName, setEditingCollectionName] = useState<string | null>(null);
+
+    // Collection Management Modal State
+    const [isManageModalOpen, setIsManageModalOpen] = useState(false);
+    const [isDeletingCollection, setIsDeletingCollection] = useState<string | null>(null);
+
     const router = useRouter();
 
     const handleDelete = async (id: string) => {
@@ -45,6 +56,31 @@ export function GalleryClient({ initialImages }: { initialImages: any[] }) {
         } finally {
             setIsSyncing(false);
         }
+    };
+
+    const handleDeleteCollection = async (name: string) => {
+        if (!confirm(`Are you sure you want to delete the collection "${name}"?`)) return;
+
+        setIsDeletingCollection(name);
+        try {
+            const res = await fetch(`/api/collections?name=${encodeURIComponent(name)}`, { method: "DELETE" });
+            if (!res.ok) throw new Error("Failed to delete collection");
+
+            setCollections(prev => prev.filter(c => c.name !== name));
+            router.refresh();
+        } catch (err) {
+            console.error(err);
+            alert("Error deleting collection.");
+        } finally {
+            setIsDeletingCollection(null);
+        }
+    };
+
+    const handleEditCollection = (name: string, collectionImages: string[]) => {
+        setIsManageModalOpen(false);
+        setIsSelectingCollection(true);
+        setSelectedImages(collectionImages);
+        setEditingCollectionName(name);
     };
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -169,6 +205,28 @@ export function GalleryClient({ initialImages }: { initialImages: any[] }) {
                     >
                         <RefreshCw size={18} className={isSyncing ? "animate-spin text-[var(--primary)]" : "text-[var(--muted-foreground)]"} />
                     </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsSelectingCollection(!isSelectingCollection);
+                            setSelectedImages([]);
+                            setEditingCollectionName(null);
+                        }}
+                        className={`p-2.5 rounded-lg border transition-colors flex items-center gap-2 ${isSelectingCollection && !editingCollectionName ? 'border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]' : 'border-[var(--border)] bg-[var(--background)] hover:bg-[var(--accent)] text-[var(--muted-foreground)]'}`}
+                        title="Create New Collection"
+                    >
+                        <FolderPlus size={18} />
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsManageModalOpen(true);
+                        }}
+                        className="p-2.5 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--accent)] text-[var(--muted-foreground)] transition-colors"
+                        title="Manage Collections"
+                    >
+                        <Folders size={18} />
+                    </button>
                     <select
                         value={sortOrder}
                         onChange={(e) => setSortOrder(e.target.value)}
@@ -219,7 +277,18 @@ export function GalleryClient({ initialImages }: { initialImages: any[] }) {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
                     {filteredImages.map((img) => (
-                        <div key={img.id} className="group relative rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-sm shadow-sm hover:shadow-md hover:border-[var(--primary)]/50 transition-all">
+                        <div
+                            key={img.id}
+                            onClick={(e) => {
+                                if (isSelectingCollection) {
+                                    e.stopPropagation();
+                                    setSelectedImages(prev =>
+                                        prev.includes(img.id) ? prev.filter(i => i !== img.id) : [...prev, img.id]
+                                    );
+                                }
+                            }}
+                            className={`group relative rounded-xl overflow-hidden border ${isSelectingCollection && selectedImages.includes(img.id) ? 'border-[var(--primary)] shadow-[0_0_0_2px_var(--primary)]' : 'border-[var(--border)]'} bg-[var(--card)]/60 backdrop-blur-sm shadow-sm hover:shadow-md transition-all ${isSelectingCollection ? 'cursor-pointer' : ''}`}
+                        >
 
                             {/* Image Thumbnail Placeholder / Mock using raw path (since we don't have a static router pointing to the raw dir yet) */}
                             <div className="aspect-video bg-[var(--muted)]/50 flex flex-col items-center justify-center text-[var(--muted-foreground)] relative">
@@ -227,36 +296,51 @@ export function GalleryClient({ initialImages }: { initialImages: any[] }) {
                                     src={`/api/raw/${img.id}`}
                                     alt={img.filename}
                                     loading="lazy"
-                                    className="w-full h-full object-cover" // object-cover ensures it fills the aspect-video container beautifully
+                                    className={`w-full h-full object-cover transition-all ${isSelectingCollection && selectedImages.includes(img.id) ? 'opacity-80 scale-105' : ''}`}
                                 />
 
-                                {/* Hover Overlay */}
-                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 backdrop-blur-sm p-4">
-                                    <div className="flex items-center gap-3">
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); setPreviewImage(img.id); }}
-                                            className="p-3 bg-white/20 hover:bg-white/40 text-white rounded-full transition-colors backdrop-blur-md"
-                                            title="Preview Image"
-                                        >
-                                            <Eye size={18} />
-                                        </button>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleDelete(img.id); }}
-                                            disabled={isDeleting === img.id}
-                                            className="p-3 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors disabled:opacity-50"
-                                            title="Delete Image"
-                                        >
-                                            {isDeleting === img.id ? (
-                                                <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                            ) : (
-                                                <Trash2 size={18} />
-                                            )}
-                                        </button>
+                                {/* Selection Checkmark Overlay */}
+                                {isSelectingCollection && (
+                                    <div className="absolute top-3 right-3 z-20">
+                                        {selectedImages.includes(img.id) ? (
+                                            <div className="h-6 w-6 bg-[var(--primary)] rounded-full flex items-center justify-center text-[var(--primary-foreground)] shadow-lg">
+                                                <Check size={14} strokeWidth={3} />
+                                            </div>
+                                        ) : (
+                                            <div className="h-6 w-6 bg-black/40 border-2 border-white/60 rounded-full shadow-lg backdrop-blur-sm group-hover:bg-black/60 transition-colors" />
+                                        )}
                                     </div>
-                                    <p className="text-white/90 text-sm break-all text-center font-medium mt-1 max-w-full truncate px-2" title={img.filename}>
-                                        {img.filename}
-                                    </p>
-                                </div>
+                                )}
+
+                                {/* Hover Overlay */}
+                                {!isSelectingCollection && (
+                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 backdrop-blur-sm p-4">
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); setPreviewImage(img.id); }}
+                                                className="p-3 bg-white/20 hover:bg-white/40 text-white rounded-full transition-colors backdrop-blur-md"
+                                                title="Preview Image"
+                                            >
+                                                <Eye size={18} />
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleDelete(img.id); }}
+                                                disabled={isDeleting === img.id}
+                                                className="p-3 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors disabled:opacity-50"
+                                                title="Delete Image"
+                                            >
+                                                {isDeleting === img.id ? (
+                                                    <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                ) : (
+                                                    <Trash2 size={18} />
+                                                )}
+                                            </button>
+                                        </div>
+                                        <p className="text-white/90 text-sm break-all text-center font-medium mt-1 max-w-full truncate px-2" title={img.filename}>
+                                            {img.filename}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="p-4">
@@ -291,6 +375,131 @@ export function GalleryClient({ initialImages }: { initialImages: any[] }) {
                         alt="Preview"
                         className="max-w-[66vw] max-h-[66vh] object-contain rounded-md shadow-2xl"
                     />
+                </div>
+            )}
+
+            {/* Floating Selection Bar */}
+            {isSelectingCollection && (
+                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-[var(--card)]/90 backdrop-blur-md border border-[var(--border)] shadow-2xl rounded-full px-6 py-3 flex items-center gap-6 animate-in slide-in-from-bottom-5 fade-in duration-200">
+                    <span className="font-bold whitespace-nowrap">{selectedImages.length} selected</span>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsSelectingCollection(false);
+                                setSelectedImages([]);
+                                setEditingCollectionName(null);
+                            }}
+                            className="px-4 py-2 rounded-full border border-[var(--border)] hover:bg-[var(--accent)] transition-colors text-sm font-medium whitespace-nowrap"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={async (e) => {
+                                e.stopPropagation();
+                                if (selectedImages.length === 0) {
+                                    alert("Select at least one image to save this collection.");
+                                    return;
+                                }
+                                const name = prompt("Enter a name for this collection:", editingCollectionName || "");
+                                if (!name) return;
+
+                                try {
+                                    const res = await fetch('/api/collections', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ name, images: selectedImages })
+                                    });
+                                    if (!res.ok) throw new Error("Failed to save collection");
+
+                                    // Refresh local state if editing name changed or just updating images
+                                    setCollections(prev => {
+                                        const filtered = prev.filter(c => c.name !== name && c.name !== editingCollectionName);
+                                        return [...filtered, { name, images: selectedImages }].sort((a, b) => a.name.localeCompare(b.name));
+                                    });
+
+                                    // If we renamed it, delete the old one
+                                    if (editingCollectionName && editingCollectionName !== name) {
+                                        await fetch(`/api/collections?name=${encodeURIComponent(editingCollectionName)}`, { method: "DELETE" });
+                                    }
+
+                                    setIsSelectingCollection(false);
+                                    setSelectedImages([]);
+                                    setEditingCollectionName(null);
+                                    router.refresh(); // Refresh to pull updated collections in top-level app state if needed
+                                } catch (err) {
+                                    alert("Error saving collection.");
+                                }
+                            }}
+                            className="px-5 py-2 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] hover:brightness-110 transition-colors text-sm font-bold whitespace-nowrap shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)]"
+                        >
+                            {editingCollectionName ? "Update Collection" : "Save Collection"}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Manage Collections Modal */}
+            {isManageModalOpen && (
+                <div
+                    onClick={() => setIsManageModalOpen(false)}
+                    className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+                >
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="bg-[var(--background)] border border-[var(--border)] rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]"
+                    >
+                        <div className="flex justify-between items-center p-6 border-b border-[var(--border)]/50">
+                            <div>
+                                <h2 className="text-xl font-bold">Manage Collections</h2>
+                                <p className="text-sm text-[var(--muted-foreground)] mt-1">Edit or delete your curated lists</p>
+                            </div>
+                            <button onClick={() => setIsManageModalOpen(false)} className="p-2 hover:bg-[var(--accent)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] rounded-full transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="overflow-y-auto p-6 flex-1">
+                            {collections.length === 0 ? (
+                                <div className="text-center py-8 text-[var(--muted-foreground)] flex flex-col items-center gap-2">
+                                    <Folders size={32} className="opacity-20" />
+                                    <p>You have not created any collections yet.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {collections.map((collection) => (
+                                        <div key={collection.name} className="flex items-center justify-between p-4 rounded-xl border border-[var(--border)] bg-[var(--card)]/50 hover:border-[var(--primary)]/30 transition-colors">
+                                            <div>
+                                                <h3 className="font-bold">{collection.name}</h3>
+                                                <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{collection.images.length} item{collection.images.length !== 1 && 's'}</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => handleEditCollection(collection.name, collection.images)}
+                                                    className="p-2 rounded-lg bg-[var(--background)] border border-[var(--border)] hover:bg-[var(--primary)]/10 hover:border-[var(--primary)]/30 hover:text-[var(--primary)] transition-colors"
+                                                    title="Edit Collection"
+                                                >
+                                                    <Edit3 size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteCollection(collection.name)}
+                                                    disabled={isDeletingCollection === collection.name}
+                                                    className="p-2 rounded-lg bg-[var(--background)] border border-[var(--border)] hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-colors disabled:opacity-50"
+                                                    title="Delete Collection"
+                                                >
+                                                    {isDeletingCollection === collection.name ? (
+                                                        <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                                    ) : (
+                                                        <Trash2 size={16} />
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

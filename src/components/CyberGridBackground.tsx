@@ -16,6 +16,21 @@ export function CyberGridBackground() {
 
         let animationFrameId: number;
 
+        let primaryRgb = '139, 92, 246';
+        const updateThemeColor = () => {
+            if (typeof window !== 'undefined') {
+                const hex = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+                if (hex && hex.startsWith('#') && hex.length === 7) {
+                    const r = parseInt(hex.slice(1, 3), 16);
+                    const g = parseInt(hex.slice(3, 5), 16);
+                    const b = parseInt(hex.slice(5, 7), 16);
+                    primaryRgb = `${r}, ${g}, ${b}`;
+                }
+            }
+        };
+        updateThemeColor();
+        window.addEventListener('theme-changed', updateThemeColor);
+
         const mouse = { x: -1000, y: -1000 };
         const gridSize = 40;
         let time = 0;
@@ -41,7 +56,6 @@ export function CyberGridBackground() {
             const isDark = resolvedTheme === "dark";
 
             const baseColor = isDark ? "rgba(255, 255, 255, 0.03)" : "rgba(0, 0, 0, 0.03)";
-            const highlightColor = isDark ? "rgba(139, 92, 246, 0.8)" : "rgba(139, 92, 246, 0.5)"; // Violet-500
 
             ctx.lineWidth = 1;
             time += 0.01; // For subtle pulse if desired
@@ -62,7 +76,7 @@ export function CyberGridBackground() {
 
                     if (distance < highlightRadius) {
                         const intensity = 1 - (distance / highlightRadius);
-                        ctx.strokeStyle = `rgba(139, 92, 246, ${intensity * 0.4})`;
+                        ctx.strokeStyle = `rgba(${primaryRgb}, ${intensity * 0.4})`;
                         ctx.lineWidth = 1.5;
                     } else {
                         ctx.strokeStyle = baseColor;
@@ -76,7 +90,7 @@ export function CyberGridBackground() {
                     ctx.lineTo(x + gridSize, y);
                     if (distance < highlightRadius) {
                         const intensity = 1 - (distance / highlightRadius);
-                        ctx.strokeStyle = `rgba(139, 92, 246, ${intensity * 0.4})`;
+                        ctx.strokeStyle = `rgba(${primaryRgb}, ${intensity * 0.4})`;
                         ctx.lineWidth = 1.5;
                     } else {
                         ctx.strokeStyle = baseColor;
@@ -88,7 +102,7 @@ export function CyberGridBackground() {
                     if (distance < highlightRadius) {
                         const intensity = 1 - (distance / highlightRadius);
                         ctx.beginPath();
-                        ctx.fillStyle = `rgba(139, 92, 246, ${intensity * 0.8})`;
+                        ctx.fillStyle = `rgba(${primaryRgb}, ${intensity * 0.8})`;
                         ctx.arc(x, y, 1.5, 0, Math.PI * 2);
                         ctx.fill();
                     }
@@ -109,6 +123,7 @@ export function CyberGridBackground() {
             window.removeEventListener("resize", resize);
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("mouseleave", handleMouseLeave);
+            window.removeEventListener("theme-changed", updateThemeColor);
             cancelAnimationFrame(animationFrameId);
         };
     }, [resolvedTheme]);

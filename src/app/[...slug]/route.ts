@@ -24,6 +24,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
         let images = Object.values(db.images);
 
         // --- ENFORCE CATEGORY SCOPING ---
+        if (profile.filters?.collection && db.collections && db.collections[profile.filters.collection as string]) {
+            const allowedIds = db.collections[profile.filters.collection as string];
+            images = images.filter((img: any) => allowedIds.includes(img.id));
+        }
+
         if (profile.filters?.orientation && profile.filters.orientation.length > 0) {
             images = images.filter((img: any) => profile.filters!.orientation!.includes(img.orientation || "Unknown"));
         }

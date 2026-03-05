@@ -1,4 +1,9 @@
 # New Wallpaper Who Dis
+
+**New Wallpaper Who Dis** is a lightweight, self-hosted wallpaper management server and dynamic rotation engine. Built on a zero-maintenance "flat-file" architecture, it allows you to manage massive wallpaper collections simply by dropping images into a directory.
+
+The system automatically scans your files, processes critical metadata (like Aspect Ratio, Orientation, and Luminosity), and serves them to your devices via fully customized rotation profiles. Create custom URL slugs that trigger new wallpapers on demand or via timed intervals. No more complex database configurations or manual tagging—just drag, drop, and let the engine curate your screens.
+
 ## Running the application
 
 The easiest way to deploy New Wallpaper Who Dis is by downloading the pre-configured `docker-compose.yml` file and running it. You do not need to download the full source code.

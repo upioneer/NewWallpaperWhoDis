@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { X, CheckCircle2, AlertCircle, Monitor } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, luminosities }: { isOpen: boolean, onClose: () => void, onSuccess: () => void, orientations: string[], luminosities: string[] }) {
+export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, luminosities, collections, initialData }: { isOpen: boolean, onClose: () => void, onSuccess: () => void, orientations: string[], luminosities: string[], collections: string[], initialData?: any }) {
     const [name, setName] = useState("");
     const [slug, setSlug] = useState("");
     const [triggerType, setTriggerType] = useState<"time" | "request" | "random">("time");
@@ -15,9 +17,52 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
     // Tag Scope tracking
     const [selectedOrientation, setSelectedOrientation] = useState("All");
     const [selectedLuminosity, setSelectedLuminosity] = useState("All");
+    const [selectedCollection, setSelectedCollection] = useState("Any Collection");
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const router = useRouter();
+
+    useEffect(() => {
+        if (isOpen && initialData) {
+            setName(initialData.name || "");
+            setSlug(initialData.slug || "");
+            setTriggerType(initialData.triggerType || "time");
+
+            if (initialData.triggerType === "time" && initialData.intervalMinutes) {
+                if (initialData.intervalMinutes < 1) {
+                    setIntervalValue(initialData.intervalMinutes * 60);
+                    setIntervalUnit("Seconds");
+                } else if (initialData.intervalMinutes >= 1440 && initialData.intervalMinutes % 1440 === 0) {
+                    setIntervalValue(initialData.intervalMinutes / 1440);
+                    setIntervalUnit("Days");
+                } else if (initialData.intervalMinutes >= 60 && initialData.intervalMinutes % 60 === 0) {
+                    setIntervalValue(initialData.intervalMinutes / 60);
+                    setIntervalUnit("Hours");
+                } else {
+                    setIntervalValue(initialData.intervalMinutes);
+                    setIntervalUnit("Minutes");
+                }
+            } else {
+                setIntervalValue(60);
+                setIntervalUnit("Minutes");
+            }
+
+            setSelectedOrientation(initialData.filters?.orientation?.[0] || "All");
+            setSelectedLuminosity(initialData.filters?.luminosity?.[0] || "All");
+            setSelectedCollection(initialData.filters?.collection || "Any Collection");
+        } else if (isOpen) {
+            setName("");
+            setSlug("");
+            setTriggerType("time");
+            setIntervalValue(60);
+            setIntervalUnit("Minutes");
+            setSelectedOrientation("All");
+            setSelectedLuminosity("All");
+            setSelectedCollection("Any Collection");
+        }
+        setError("");
+    }, [isOpen, initialData]);
 
     if (!isOpen) return null;
 
@@ -33,8 +78,11 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
             if (intervalUnit === "Hours") computedMinutes = intervalValue * 60;
             if (intervalUnit === "Days") computedMinutes = intervalValue * 1440;
 
-            const res = await fetch("/api/profiles", {
-                method: "POST",
+            const url = initialData ? `/api/profiles/${initialData.id}` : "/api/profiles";
+            const method = initialData ? "PUT" : "POST";
+
+            const res = await fetch(url, {
+                method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     name,
@@ -43,7 +91,8 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
                     intervalMinutes: triggerType === "time" ? computedMinutes : undefined,
                     filters: {
                         orientation: selectedOrientation === "All" ? [] : [selectedOrientation],
-                        luminosity: selectedLuminosity === "All" ? [] : [selectedLuminosity]
+                        luminosity: selectedLuminosity === "All" ? [] : [selectedLuminosity],
+                        collection: selectedCollection === "Any Collection" ? undefined : selectedCollection
                     }
                 }),
             });
@@ -61,6 +110,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
             setIntervalUnit("Minutes");
             setSelectedOrientation("All");
             setSelectedLuminosity("All");
+            setSelectedCollection("Any Collection");
             onSuccess();
         } catch (err: any) {
             setError(err.message);
@@ -86,7 +136,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
                         <div className="h-10 w-10 bg-[var(--primary)]/10 rounded-lg flex items-center justify-center">
                             <Monitor className="text-[var(--primary)]" size={20} />
                         </div>
-                        <h2 className="text-xl font-bold">Create New Profile</h2>
+                        <h2 className="text-xl font-bold">{initialData ? "Edit Profile" : "Create New Profile"}</h2>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] rounded-full transition-colors">
                         <X size={20} />
@@ -137,7 +187,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
                         <div className="space-y-3">
                             <label className="block text-sm font-medium text-[var(--foreground)]">Filter Scope & Tags</label>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                 <select
                                     value={selectedOrientation}
                                     onChange={(e) => setSelectedOrientation(e.target.value)}
@@ -157,6 +207,24 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
                                     <option value="All">All Brightness</option>
                                     {luminosities.map(lum => (
                                         <option key={lum} value={lum}>{lum}</option>
+                                    ))}
+                                </select>
+
+                                <select
+                                    value={selectedCollection}
+                                    onChange={(e) => {
+                                        if (e.target.value === "CREATE_NEW") {
+                                            router.push('/gallery?action=create_collection');
+                                            return;
+                                        }
+                                        setSelectedCollection(e.target.value);
+                                    }}
+                                    className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 transition-all text-sm text-[var(--foreground)]"
+                                >
+                                    <option value="CREATE_NEW" className="font-bold text-[var(--primary)] font-medium">+ Create new...</option>
+                                    <option value="Any Collection">Any Collection</option>
+                                    {collections.map(col => (
+                                        <option key={col} value={col}>{col}</option>
                                     ))}
                                 </select>
                             </div>
@@ -242,7 +310,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
                             {loading ? (
                                 <div className="h-5 w-5 border-2 border-[var(--primary-foreground)] border-t-transparent rounded-full animate-spin"></div>
                             ) : (
-                                "Save Profile"
+                                initialData ? "Save Changes" : "Save Profile"
                             )}
                         </button>
                     </div>

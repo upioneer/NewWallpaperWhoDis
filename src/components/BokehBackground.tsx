@@ -15,7 +15,22 @@ export function BokehBackground() {
         if (!ctx) return;
 
         let animationFrameId: number;
-        let orbs: Array<{ x: number, y: number, vx: number, vy: number, radius: number, hue: number }> = [];
+        let orbs: Array<{ x: number, y: number, vx: number, vy: number, radius: number }> = [];
+
+        let primaryRgb = '139, 92, 246';
+        const updateThemeColor = () => {
+            if (typeof window !== 'undefined') {
+                const hex = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+                if (hex && hex.startsWith('#') && hex.length === 7) {
+                    const r = parseInt(hex.slice(1, 3), 16);
+                    const g = parseInt(hex.slice(3, 5), 16);
+                    const b = parseInt(hex.slice(5, 7), 16);
+                    primaryRgb = `${r}, ${g}, ${b}`;
+                }
+            }
+        };
+        updateThemeColor();
+        window.addEventListener('theme-changed', updateThemeColor);
 
         const mouse = { x: -1000, y: -1000 };
 
@@ -46,7 +61,6 @@ export function BokehBackground() {
                     vx: (Math.random() - 0.5) * 0.2, // Very slow drift
                     vy: (Math.random() - 0.5) * 0.2,
                     radius: Math.random() * 80 + 20, // Large, soft orbs (20px to 100px)
-                    hue: Math.random() * 60 + 200, // Blues/Purples (200 to 260)
                 });
             }
         };
@@ -83,11 +97,11 @@ export function BokehBackground() {
                 const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.radius);
 
                 if (isDark) {
-                    gradient.addColorStop(0, `hsla(${orb.hue}, 80%, 60%, 0.15)`);
-                    gradient.addColorStop(1, `hsla(${orb.hue}, 80%, 60%, 0)`);
+                    gradient.addColorStop(0, `rgba(${primaryRgb}, 0.25)`);
+                    gradient.addColorStop(1, `rgba(${primaryRgb}, 0)`);
                 } else {
-                    gradient.addColorStop(0, `hsla(${orb.hue}, 80%, 40%, 0.1)`);
-                    gradient.addColorStop(1, `hsla(${orb.hue}, 80%, 40%, 0)`);
+                    gradient.addColorStop(0, `rgba(${primaryRgb}, 0.15)`);
+                    gradient.addColorStop(1, `rgba(${primaryRgb}, 0)`);
                 }
 
                 ctx.fillStyle = gradient;
@@ -113,6 +127,7 @@ export function BokehBackground() {
             window.removeEventListener("resize", resize);
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("mouseleave", handleMouseLeave);
+            window.removeEventListener("theme-changed", updateThemeColor);
             cancelAnimationFrame(animationFrameId);
         };
     }, [resolvedTheme]);

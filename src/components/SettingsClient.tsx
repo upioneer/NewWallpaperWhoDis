@@ -12,16 +12,27 @@ export function SettingsClient({ initialSettings, backgroundImages = [] }: { ini
     const [settings, setSettings] = useState(initialSettings);
     const [loading, setLoading] = useState(false);
 
-    const updateGalleryWidgetBackground = async (val: string) => {
+    const updateSetting = async (key: string, val: string) => {
         setLoading(true);
         // Optimistic UI update
-        setSettings({ ...settings, galleryWidgetBackground: val });
+        const updatedSettings = { ...settings, [key]: val };
+        setSettings(updatedSettings);
+
+        if (key === 'theme') {
+            const html = document.documentElement;
+            // Remove old theme prefixed classes
+            html.className = html.className.replace(/\btheme-[a-z0-9-]+\b/g, '');
+            if (val !== 'theme-origin') {
+                html.classList.add(val);
+            }
+            window.dispatchEvent(new Event('theme-changed'));
+        }
 
         try {
             await fetch("/api/settings", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ galleryWidgetBackground: val }),
+                body: JSON.stringify({ [key]: val }),
             });
         } catch (e) {
             console.error(e);
@@ -58,15 +69,7 @@ export function SettingsClient({ initialSettings, backgroundImages = [] }: { ini
                             {loading && <Loader2 className="animate-spin text-[var(--muted-foreground)]" size={16} />}
                             <select
                                 value={settings?.dashboardBackground || "particles"}
-                                onChange={(e) => {
-                                    setLoading(true);
-                                    setSettings({ ...settings, dashboardBackground: e.target.value });
-                                    fetch("/api/settings", {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify({ dashboardBackground: e.target.value }),
-                                    }).finally(() => setLoading(false));
-                                }}
+                                onChange={(e) => updateSetting('dashboardBackground', e.target.value)}
                                 disabled={loading}
                                 className="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 transition-all text-sm font-medium disabled:opacity-50"
                             >
@@ -87,7 +90,7 @@ export function SettingsClient({ initialSettings, backgroundImages = [] }: { ini
                             {loading && <Loader2 className="animate-spin text-[var(--muted-foreground)]" size={16} />}
                             <select
                                 value={settings?.galleryWidgetBackground || "random"}
-                                onChange={(e) => updateGalleryWidgetBackground(e.target.value)}
+                                onChange={(e) => updateSetting('galleryWidgetBackground', e.target.value)}
                                 disabled={loading}
                                 className="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 transition-all text-sm font-medium disabled:opacity-50"
                             >
@@ -108,15 +111,7 @@ export function SettingsClient({ initialSettings, backgroundImages = [] }: { ini
                                 {loading && <Loader2 className="animate-spin text-[var(--muted-foreground)]" size={16} />}
                                 <select
                                     value={settings?.galleryWidgetBlur || "none"}
-                                    onChange={(e) => {
-                                        setLoading(true);
-                                        setSettings({ ...settings, galleryWidgetBlur: e.target.value });
-                                        fetch("/api/settings", {
-                                            method: "POST",
-                                            headers: { "Content-Type": "application/json" },
-                                            body: JSON.stringify({ galleryWidgetBlur: e.target.value }),
-                                        }).finally(() => setLoading(false));
-                                    }}
+                                    onChange={(e) => updateSetting('galleryWidgetBlur', e.target.value)}
                                     disabled={loading}
                                     className="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 transition-all text-sm font-medium disabled:opacity-50"
                                 >
@@ -127,6 +122,40 @@ export function SettingsClient({ initialSettings, backgroundImages = [] }: { ini
                             </div>
                         </div>
                     )}
+                </div>
+            </div>
+
+            <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-4 text-[var(--primary)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z" /><path d="m5 2 5 5" /><path d="M2 13h15" /><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z" /></svg>
+                    <h3 className="font-bold text-lg">Appearance & Themes</h3>
+                </div>
+                <p className="text-[var(--muted-foreground)] mb-6">
+                    Personalize your application's accent colors and vibes.
+                </p>
+
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 border border-[var(--border)]/50 rounded-lg bg-[var(--background)]/50">
+                    <div>
+                        <h4 className="font-semibold text-sm mb-1">Color Palette</h4>
+                        <p className="text-xs text-[var(--muted-foreground)] max-w-sm">Select the core identity colors of the application.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {loading && <Loader2 className="animate-spin text-[var(--muted-foreground)]" size={16} />}
+                        <select
+                            value={settings?.theme || "theme-origin"}
+                            onChange={(e) => updateSetting('theme', e.target.value)}
+                            disabled={loading}
+                            className="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 transition-all text-sm font-medium disabled:opacity-50"
+                        >
+                            <option value="theme-origin">Origin (Violet & Monochrome)</option>
+                            <option value="theme-dragon">Dragon (Red & Deep Charcoal)</option>
+                            <option value="theme-northern-lights">Northern Lights (Green & Abyssal)</option>
+                            <option value="theme-miami">Miami (Orange & Deep Teal)</option>
+                            <option value="theme-citrus">Citrus (Warm Yellow & Soft Black)</option>
+                            <option value="theme-watermelon">Watermelon (Pink & Neon Green)</option>
+                            <option value="theme-terminal">Terminal (Phosphor Green & Pure Black)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>

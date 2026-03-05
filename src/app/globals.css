@@ -51,6 +51,84 @@
   --border: #27272a;
 }
 
+/* THEMES */
+.theme-dragon {
+  --primary: #e11d48;
+  --primary-foreground: #ffffff;
+}
+
+.dark.theme-dragon {
+  --background: #110e10;
+  --card: #1a1618;
+  --primary: #fb7185;
+  --primary-foreground: #000000;
+}
+
+.theme-northern-lights {
+  --primary: #10b981;
+  --primary-foreground: #ffffff;
+}
+
+.dark.theme-northern-lights {
+  --background: #0a1114;
+  --card: #121d23;
+  --primary: #34d399;
+  --primary-foreground: #000000;
+  --muted: #0f1c24;
+}
+
+.theme-miami {
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+}
+
+.dark.theme-miami {
+  --background: #0f141a;
+  --card: #171d26;
+  --primary: #2dd4bf;
+  --primary-foreground: #000000;
+  --muted: #1e2632;
+}
+
+.theme-citrus {
+  --primary: #f59e0b;
+  --primary-foreground: #ffffff;
+}
+
+.dark.theme-citrus {
+  --background: #15110c;
+  --card: #1c1813;
+  --primary: #fbbf24;
+  --primary-foreground: #000000;
+  --muted: #24201a;
+}
+
+.theme-watermelon {
+  --primary: #ec4899;
+  --primary-foreground: #ffffff;
+}
+
+.dark.theme-watermelon {
+  --background: #120e15;
+  --card: #19141d;
+  --primary: #a3e635;
+  --primary-foreground: #000000;
+  --muted: #221c27;
+}
+
+.theme-terminal {
+  --primary: #22c55e;
+  --primary-foreground: #ffffff;
+}
+
+.dark.theme-terminal {
+  --background: #050a05;
+  --card: #0c150c;
+  --primary: #4ade80;
+  --primary-foreground: #000000;
+  --muted: #132413;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);

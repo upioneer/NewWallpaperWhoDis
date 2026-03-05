@@ -1,7 +1,7 @@
 
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Monitor, ArrowLeft, Settings } from "lucide-react";
-import Link from "next/link";
+import { Settings } from "lucide-react";
+import { GlobalNav } from "@/components/GlobalNav";
 import { readDb } from "@/lib/db";
 import { SettingsClient } from "@/components/SettingsClient";
 
@@ -15,24 +15,7 @@ export default async function SettingsPage() {
 
     return (
         <div className="relative min-h-screen">
-            {/* Navbar Shell */}
-            <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-md">
-                <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Link href="/" className="p-2 hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] rounded-full transition-colors mr-2">
-                            <ArrowLeft size={20} />
-                        </Link>
-                        <div className="flex items-center gap-2 font-bold text-lg tracking-tight">
-                            <Monitor className="text-[var(--primary)]" size={24} />
-                            <span>New Wallpaper Who Dis</span>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <ThemeToggle />
-                    </div>
-                </div>
-            </header>
+            <GlobalNav title="System Settings" />
 
             <main className="container mx-auto px-4 pt-12 pb-24 max-w-3xl">
                 <div className="flex items-center gap-3 mb-8">

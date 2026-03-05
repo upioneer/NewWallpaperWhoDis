@@ -19,12 +19,14 @@ export interface SystemSettings {
     dashboardBackground: "particles" | "aurora" | "bokeh" | "kenburns" | "cybergrid";
     galleryWidgetBackground: "random" | "recent" | "disabled";
     galleryWidgetBlur: "none" | "some" | "lots";
+    theme?: string;
 }
 
 export interface DatabaseSchema {
     images: Record<string, ImageMetadata>;
     profiles: Record<string, any>; // defined later in phase 2 MVP
     settings: SystemSettings;
+    collections?: Record<string, string[]>;
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data');
@@ -37,7 +39,8 @@ const DEFAULT_DB: DatabaseSchema = {
         dashboardBackground: "particles",
         galleryWidgetBackground: "random",
         galleryWidgetBlur: "none"
-    }
+    },
+    collections: {}
 };
 
 async function ensureDbExists() {
@@ -65,6 +68,7 @@ export async function readDb(): Promise<DatabaseSchema> {
         if (!parsed.settings.dashboardBackground) parsed.settings.dashboardBackground = "particles";
         if (!parsed.profiles) parsed.profiles = DEFAULT_DB.profiles;
         if (!parsed.images) parsed.images = DEFAULT_DB.images;
+        if (!parsed.collections) parsed.collections = {};
 
         return parsed as DatabaseSchema;
     } catch (error) {

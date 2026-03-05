@@ -22,9 +22,9 @@ export function AuroraBackground() {
                     Aurora CSS Animation Effect
                     Utilizes nested blurred radial gradients with slow, looping transform animations
                 */}
-                <div className="absolute top-[-50%] left-[-10%] w-[70vw] h-[70vw] rounded-full mix-blend-screen filter blur-[100px] opacity-60 animate-blob bg-purple-500/40"></div>
-                <div className="absolute top-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full mix-blend-screen filter blur-[100px] opacity-60 animate-blob animation-delay-2000 bg-cyan-400/40"></div>
-                <div className="absolute bottom-[-40%] left-[20%] w-[80vw] h-[80vw] rounded-full mix-blend-screen filter blur-[100px] opacity-60 animate-blob animation-delay-4000 bg-blue-500/40"></div>
+                <div className="absolute top-[-50%] left-[-10%] w-[70vw] h-[70vw] rounded-full filter blur-[100px] opacity-50 animate-blob" style={{ backgroundColor: 'var(--primary)', mixBlendMode: isDark ? 'screen' : 'multiply' }}></div>
+                <div className="absolute top-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full filter blur-[100px] opacity-40 animate-blob animation-delay-2000" style={{ backgroundColor: 'var(--primary)', mixBlendMode: isDark ? 'screen' : 'multiply' }}></div>
+                <div className="absolute bottom-[-40%] left-[20%] w-[80vw] h-[80vw] rounded-full filter blur-[100px] opacity-60 animate-blob animation-delay-4000" style={{ backgroundColor: 'var(--primary)', mixBlendMode: isDark ? 'screen' : 'multiply' }}></div>
             </div>
 
             <style dangerouslySetInnerHTML={{

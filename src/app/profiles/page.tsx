@@ -5,8 +5,8 @@ import { KenBurnsBackground } from "@/components/KenBurnsBackground";
 import { CyberGridBackground } from "@/components/CyberGridBackground";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ProfileListClient } from "@/components/ProfileListClient";
-import { Monitor, ArrowLeft, Settings } from "lucide-react";
-import Link from "next/link";
+import { User } from "lucide-react";
+import { GlobalNav } from "@/components/GlobalNav";
 import { readDb } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +20,8 @@ export default async function ProfilesPage() {
     const images = Object.values(db.images || {});
     const uniqueCategories = ["All", ...Array.from(new Set(images.map((img: any) => img.orientation || "Unknown")))];
     const uniqueLuminosities = ["All", "Light", "Dark"];
+    const collections = Object.keys(db.collections || {}).sort((a, b) => a.localeCompare(b));
+
     return (
         <div className="relative min-h-screen">
             {settings.dashboardBackground === "aurora" ? <AuroraBackground /> :
@@ -28,30 +30,10 @@ export default async function ProfilesPage() {
                         settings.dashboardBackground === "cybergrid" ? <CyberGridBackground /> :
                             <ParticleBackground />}
 
-            {/* Navbar Shell */}
-            <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-md">
-                <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Link href="/" className="p-2 hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] rounded-full transition-colors mr-2">
-                            <ArrowLeft size={20} />
-                        </Link>
-                        <div className="flex items-center gap-2 font-bold text-lg tracking-tight">
-                            <Monitor className="text-[var(--primary)]" size={24} />
-                            <span>New Wallpaper Who Dis</span>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <Link href="/settings" className="p-2 hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] rounded-full transition-colors" title="System Settings">
-                            <Settings size={20} />
-                        </Link>
-                        <ThemeToggle />
-                    </div>
-                </div>
-            </header>
+            <GlobalNav title="Profiles & Slugs" />
 
             <main className="container mx-auto px-4 pt-12 pb-24 max-w-5xl">
-                <ProfileListClient initialProfiles={profiles} categories={uniqueCategories} luminosities={uniqueLuminosities} />
+                <ProfileListClient initialProfiles={profiles} categories={uniqueCategories} luminosities={uniqueLuminosities} collections={collections} />
             </main>
         </div>
     );

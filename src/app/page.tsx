@@ -6,9 +6,10 @@ import { CyberGridBackground } from "@/components/CyberGridBackground";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UploadDropzone } from "@/components/UploadDropzone";
 import { StorageWidget } from "@/components/StorageWidget";
-import { Monitor, Images, Settings } from "lucide-react";
+import { Monitor, Images, Settings, User } from "lucide-react";
 import { readDb } from "@/lib/db";
 import Link from 'next/link';
+import { GlobalNav } from "@/components/GlobalNav";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -52,22 +53,7 @@ export default async function Home() {
             settings.dashboardBackground === "cybergrid" ? <CyberGridBackground /> :
               <ParticleBackground />}
 
-      {/* Navbar Shell */}
-      <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-bold text-lg tracking-tight">
-            <Monitor className="text-[var(--primary)]" size={24} />
-            <span>New Wallpaper Who Dis</span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Link href="/settings" className="p-2 hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] rounded-full transition-colors" title="System Settings">
-              <Settings size={20} />
-            </Link>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <GlobalNav title="New Wallpaper Who Dis" />
 
       {/* Main Content Dashboard */}
       <main className="container mx-auto px-4 pt-12 pb-24">
@@ -131,7 +117,7 @@ export default async function Home() {
           <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-md shadow-sm transition hover:shadow-md flex flex-col justify-between min-h-[200px]">
             <div>
               <div className="h-10 w-10 bg-[var(--primary)]/10 rounded-lg flex items-center justify-center mb-4">
-                <Settings className="text-[var(--primary)]" />
+                <User className="text-[var(--primary)]" />
               </div>
               <h3 className="text-xl font-bold mb-2">Profiles & Slugs</h3>
               <p className="text-[var(--muted-foreground)] mb-4">Create mapping parameters and configure dynamic rotation schedules</p>
