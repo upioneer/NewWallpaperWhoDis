@@ -14,7 +14,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { galleryWidgetBackground, galleryWidgetBlur, dashboardBackground, theme } = body;
+        const { galleryWidgetBackground, galleryWidgetBlur, dashboardBackground, theme, hasCompletedOnboarding } = body;
 
         const db = await readDb();
 
@@ -26,7 +26,8 @@ export async function POST(req: NextRequest) {
             galleryWidgetBackground: galleryWidgetBackground || currentSettings.galleryWidgetBackground,
             galleryWidgetBlur: galleryWidgetBlur || currentSettings.galleryWidgetBlur,
             dashboardBackground: dashboardBackground || currentSettings.dashboardBackground,
-            theme: theme || currentSettings.theme || "theme-origin"
+            theme: theme || currentSettings.theme || "theme-origin",
+            hasCompletedOnboarding: hasCompletedOnboarding !== undefined ? hasCompletedOnboarding : currentSettings.hasCompletedOnboarding
         };
 
         db.settings = newSettings;

@@ -20,6 +20,7 @@ export interface SystemSettings {
     galleryWidgetBackground: "random" | "recent" | "disabled";
     galleryWidgetBlur: "none" | "some" | "lots";
     theme?: string;
+    hasCompletedOnboarding?: boolean;
 }
 
 export interface DatabaseSchema {
@@ -38,7 +39,8 @@ const DEFAULT_DB: DatabaseSchema = {
     settings: {
         dashboardBackground: "particles",
         galleryWidgetBackground: "random",
-        galleryWidgetBlur: "none"
+        galleryWidgetBlur: "none",
+        hasCompletedOnboarding: false
     },
     collections: {}
 };
@@ -66,6 +68,7 @@ export async function readDb(): Promise<DatabaseSchema> {
         // Safety Fallback for schema upgrades
         if (!parsed.settings) parsed.settings = DEFAULT_DB.settings;
         if (!parsed.settings.dashboardBackground) parsed.settings.dashboardBackground = "particles";
+        if (typeof parsed.settings.hasCompletedOnboarding === 'undefined') parsed.settings.hasCompletedOnboarding = false;
         if (!parsed.profiles) parsed.profiles = DEFAULT_DB.profiles;
         if (!parsed.images) parsed.images = DEFAULT_DB.images;
         if (!parsed.collections) parsed.collections = {};

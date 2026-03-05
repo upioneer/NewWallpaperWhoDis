@@ -12,7 +12,7 @@ export function SettingsClient({ initialSettings, backgroundImages = [] }: { ini
     const [settings, setSettings] = useState(initialSettings);
     const [loading, setLoading] = useState(false);
 
-    const updateSetting = async (key: string, val: string) => {
+    const updateSetting = async (key: string, val: any) => {
         setLoading(true);
         // Optimistic UI update
         const updatedSettings = { ...settings, [key]: val };
@@ -155,6 +155,36 @@ export function SettingsClient({ initialSettings, backgroundImages = [] }: { ini
                             <option value="theme-watermelon">Watermelon (Pink & Neon Green)</option>
                             <option value="theme-terminal">Terminal (Phosphor Green & Pure Black)</option>
                         </select>
+                    </div>
+                </div>
+            </div>
+
+            <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-4 text-emerald-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                    <h3 className="font-bold text-lg">Help & Tutorials</h3>
+                </div>
+                <p className="text-[var(--muted-foreground)] mb-6">
+                    Need a refresher on how the system works?
+                </p>
+
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 border border-[var(--border)]/50 rounded-lg bg-[var(--background)]/50">
+                    <div>
+                        <h4 className="font-semibold text-sm mb-1">Onboarding Wizard</h4>
+                        <p className="text-xs text-[var(--muted-foreground)] max-w-sm">Re-launch the initial setup guide to review core concepts and themes.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => {
+                                updateSetting('hasCompletedOnboarding', false).then(() => {
+                                    window.location.href = '/';
+                                });
+                            }}
+                            disabled={loading}
+                            className="px-4 py-2 rounded-lg bg-[var(--primary)] text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50 text-sm"
+                        >
+                            {loading ? <Loader2 className="animate-spin" size={16} /> : "Start Wizard"}
+                        </button>
                     </div>
                 </div>
             </div>
