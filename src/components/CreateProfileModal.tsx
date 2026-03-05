@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { X, CheckCircle2, AlertCircle, Monitor } from "lucide-react";
+import { X, AlertCircle, Monitor } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { ProfileMetadata } from "@/lib/db";
 
-export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, luminosities, collections, initialData }: { isOpen: boolean, onClose: () => void, onSuccess: () => void, orientations: string[], luminosities: string[], collections: string[], initialData?: any }) {
+export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, luminosities, collections, initialData }: { isOpen: boolean, onClose: () => void, onSuccess: () => void, orientations: string[], luminosities: string[], collections: string[], initialData?: Partial<ProfileMetadata> }) {
     const [name, setName] = useState("");
     const [slug, setSlug] = useState("");
     const [triggerType, setTriggerType] = useState<"time" | "request" | "random">("time");
@@ -112,8 +113,12 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
             setSelectedLuminosity("All");
             setSelectedCollection("Any Collection");
             onSuccess();
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unknown error occurred.");
+            }
         } finally {
             setLoading(false);
         }

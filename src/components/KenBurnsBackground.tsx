@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ImageMetadata } from "@/lib/db";
 
-export function KenBurnsBackground({ images }: { images: any[] }) {
+export function KenBurnsBackground({ images }: { images: ImageMetadata[] }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        // eslint-disable-next-line
         setMounted(true);
         // Slowly crossfade Ken Burns images every 12 seconds
         const interval = setInterval(() => {
@@ -32,6 +34,7 @@ export function KenBurnsBackground({ images }: { images: any[] }) {
                             Ken Burns Effect CSS
                             Image starts slightly zoomed in and slowly scales/pans 
                          */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={`/api/raw/${img.id}`}
                             alt=""

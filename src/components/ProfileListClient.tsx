@@ -4,10 +4,11 @@ import { useState } from "react";
 import { Monitor, Plus, ExternalLink, Trash2 } from "lucide-react";
 import { CreateProfileModal } from "./CreateProfileModal";
 import { useRouter } from "next/navigation";
+import { ProfileMetadata } from "@/lib/db";
 
-export function ProfileListClient({ initialProfiles, categories, luminosities, collections }: { initialProfiles: any[], categories: string[], luminosities: string[], collections: string[] }) {
+export function ProfileListClient({ initialProfiles, categories, luminosities, collections }: { initialProfiles: ProfileMetadata[], categories: string[], luminosities: string[], collections: string[] }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingProfile, setEditingProfile] = useState<any>(null);
+    const [editingProfile, setEditingProfile] = useState<ProfileMetadata | null>(null);
     const router = useRouter();
 
     const openCreateModal = () => {
@@ -15,7 +16,7 @@ export function ProfileListClient({ initialProfiles, categories, luminosities, c
         setIsModalOpen(true);
     };
 
-    const openEditModal = (profile: any) => {
+    const openEditModal = (profile: ProfileMetadata) => {
         setEditingProfile(profile);
         setIsModalOpen(true);
     };
@@ -73,7 +74,7 @@ export function ProfileListClient({ initialProfiles, categories, luminosities, c
                         </button>
                     </div>
                 ) : (
-                    initialProfiles.map((profile: any) => (
+                    initialProfiles.map((profile: ProfileMetadata) => (
                         <div key={profile.id} className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)]/60 backdrop-blur-sm flex justify-between items-center group hover:border-[var(--primary)]/50 transition-colors">
                             <div>
                                 <h3 className="font-bold text-lg">{profile.name}</h3>
@@ -125,7 +126,7 @@ export function ProfileListClient({ initialProfiles, categories, luminosities, c
                 orientations={categories}
                 luminosities={luminosities}
                 collections={collections}
-                initialData={editingProfile}
+                initialData={editingProfile || undefined}
             />
         </>
     );

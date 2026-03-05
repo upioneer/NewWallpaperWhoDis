@@ -89,8 +89,8 @@ export async function POST() {
                 let categoryData = {
                     width: width,
                     height: height,
-                    orientation: "Unknown" as any,
-                    aspectRatioBucket: "Custom" as any
+                    orientation: "Unknown",
+                    aspectRatioBucket: "Custom"
                 };
 
                 if (width > 0 && height > 0) {

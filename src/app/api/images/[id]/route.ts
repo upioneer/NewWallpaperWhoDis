@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readDb, writeDb } from "@/lib/db";
-import { getProfile, updateProfile } from "@/lib/profiles";
 import { unlink } from "fs/promises";
 import path from "path";
 
@@ -19,8 +18,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         // 1. Physically delete the file from the ./wallpapers directory
         try {
             await unlink(path.join(UPLOAD_DIR, imageToDetele.filename));
-        } catch (fsError: any) {
-            console.warn(`Could not physically delete ${imageToDetele.filename} (might already be missing):`, fsError.message);
+        } catch (fsError: unknown) {
+            console.warn(`Could not physically delete ${imageToDetele.filename} (might already be missing):`, (fsError as Error).message);
         }
 
         // 2. Remove it from our JSON DB

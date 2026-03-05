@@ -27,11 +27,11 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ success: true, profile: newProfile });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Profile Creation Error:", error);
 
         // Handle specific duplicate slug error nicely
-        if (error.message.includes("already exists")) {
+        if (error instanceof Error && error.message.includes("already exists")) {
             return NextResponse.json({ error: error.message }, { status: 409 });
         }
 

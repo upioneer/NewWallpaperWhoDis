@@ -13,7 +13,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         const updatedProfile = await updateProfile(id, body);
 
         return NextResponse.json({ success: true, profile: updatedProfile });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Profile Update Error:", error);
         return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
     }
@@ -30,7 +30,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         await deleteProfile(id);
 
         return NextResponse.json({ success: true });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Profile Deletion Error:", error);
         return NextResponse.json({ error: "Failed to delete profile" }, { status: 500 });
     }

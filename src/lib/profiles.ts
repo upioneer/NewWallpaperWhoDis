@@ -1,32 +1,5 @@
-import { DatabaseSchema, readDb, writeDb } from './db';
+import { readDb, writeDb, ProfileMetadata } from './db';
 import { v4 as uuidv4 } from 'uuid';
-
-export type TriggerType = "time" | "request" | "random";
-
-export interface ProfileMetadata {
-    id: string;
-    name: string;
-    slug: string; // e.g., 'primary-display', 'vertical-monitor'
-    createdAt: string;
-
-    // Filtering rules for this profile (which images it can select from)
-    filters: {
-        orientation?: string[];
-        aspectRatioBuckets?: string[];
-        colorBucket?: string[];
-        luminosity?: string[];
-        tags?: string[]; // For Phase 2 manual tagging
-        collection?: string;
-    };
-
-    // Rotation rules
-    triggerType: TriggerType;
-    intervalMinutes?: number; // Only used if triggerType is "time"
-
-    // State tracking 
-    lastRotatedAt?: string;
-    currentImageId?: string;
-}
 
 export async function addProfile(profileData: Omit<ProfileMetadata, "id" | "createdAt">): Promise<ProfileMetadata> {
     const db = await readDb();

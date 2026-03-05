@@ -1,5 +1,4 @@
 
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Settings } from "lucide-react";
 import { GlobalNav } from "@/components/GlobalNav";
 import { readDb } from "@/lib/db";
@@ -10,8 +9,11 @@ export const revalidate = 0;
 
 export default async function SettingsPage() {
     const db = await readDb();
-    const settings = db.settings || { dashboardBackground: "particles", galleryWidgetBackground: "random", galleryWidgetBlur: "none" };
+
     const images = Object.values(db.images || {});
+
+    // eslint-disable-next-line
+    const randomImages = [...images].sort(() => 0.5 - Math.random()).slice(0, 15);
 
     return (
         <div className="relative min-h-screen">
@@ -29,7 +31,7 @@ export default async function SettingsPage() {
                 </div>
 
                 {/* Inject interactive Client logic here securely padded with serverside prop data */}
-                <SettingsClient initialSettings={db.settings} backgroundImages={[...images].sort(() => 0.5 - Math.random()).slice(0, 15)} />
+                <SettingsClient initialSettings={db.settings} backgroundImages={randomImages} />
 
             </main>
         </div>
