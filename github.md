@@ -28,4 +28,5 @@ When an agent sees this file:
 10. Push to `main` and explicitly push tags (`git push origin --tags`).
 
 ## Deployment Timeline
+* **2026-03-05:** Merged `feat/collections` into main locking in the `v0.4.0` tag representing the finalized Type Safety and Technical Debt Stabilization phase.
 * **2026-03-03:** Initialized git repository locally and pushed MVP payload to `main` successfully.

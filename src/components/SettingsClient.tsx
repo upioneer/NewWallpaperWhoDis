@@ -7,12 +7,13 @@ import { AuroraBackground } from "@/components/AuroraBackground";
 import { BokehBackground } from "@/components/BokehBackground";
 import { KenBurnsBackground } from "@/components/KenBurnsBackground";
 import { CyberGridBackground } from "@/components/CyberGridBackground";
+import { SystemSettings, ImageMetadata } from "@/lib/db";
 
-export function SettingsClient({ initialSettings, backgroundImages = [] }: { initialSettings: any, backgroundImages?: any[] }) {
-    const [settings, setSettings] = useState(initialSettings);
+export function SettingsClient({ initialSettings, backgroundImages = [] }: { initialSettings: SystemSettings, backgroundImages?: ImageMetadata[] }) {
+    const [settings, setSettings] = useState<SystemSettings>(initialSettings);
     const [loading, setLoading] = useState(false);
 
-    const updateSetting = async (key: string, val: any) => {
+    const updateSetting = async (key: keyof SystemSettings, val: string | boolean) => {
         setLoading(true);
         // Optimistic UI update
         const updatedSettings = { ...settings, [key]: val };
@@ -22,7 +23,7 @@ export function SettingsClient({ initialSettings, backgroundImages = [] }: { ini
             const html = document.documentElement;
             // Remove old theme prefixed classes
             html.className = html.className.replace(/\btheme-[a-z0-9-]+\b/g, '');
-            if (val !== 'theme-origin') {
+            if (val !== 'theme-origin' && typeof val === 'string') {
                 html.classList.add(val);
             }
             window.dispatchEvent(new Event('theme-changed'));
@@ -131,7 +132,7 @@ export function SettingsClient({ initialSettings, backgroundImages = [] }: { ini
                     <h3 className="font-bold text-lg">Appearance & Themes</h3>
                 </div>
                 <p className="text-[var(--muted-foreground)] mb-6">
-                    Personalize your application's accent colors and vibes.
+                    Personalize your application&apos;s accent colors and vibes.
                 </p>
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 border border-[var(--border)]/50 rounded-lg bg-[var(--background)]/50">

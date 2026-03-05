@@ -3,11 +3,10 @@ import { AuroraBackground } from "@/components/AuroraBackground";
 import { BokehBackground } from "@/components/BokehBackground";
 import { KenBurnsBackground } from "@/components/KenBurnsBackground";
 import { CyberGridBackground } from "@/components/CyberGridBackground";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { UploadDropzone } from "@/components/UploadDropzone";
 import { StorageWidget } from "@/components/StorageWidget";
-import { Monitor, Images, Settings, User } from "lucide-react";
-import { readDb } from "@/lib/db";
+import { Images, User } from "lucide-react";
+import { readDb, ImageMetadata, SystemSettings } from "@/lib/db";
 import Link from 'next/link';
 import { GlobalNav } from "@/components/GlobalNav";
 import { OnboardingWizard } from "@/components/OnboardingWizard";
@@ -17,10 +16,10 @@ export const revalidate = 0;
 
 export default async function Home() {
   let imageCount = 0;
-  let previewImages: any[] = [];
+  let previewImages: ImageMetadata[] = [];
   let blurClass = "blur-xl"; // Default "lots"
-  let settings: any = { dashboardBackground: "particles", galleryWidgetBackground: "random", galleryWidgetBlur: "none" };
-  let images: any[] = [];
+  let settings: SystemSettings | Record<string, unknown> = { dashboardBackground: "particles", galleryWidgetBackground: "random", galleryWidgetBlur: "none" };
+  let images: ImageMetadata[] = [];
 
   try {
     const db = await readDb();
@@ -35,10 +34,11 @@ export default async function Home() {
     if (settings.galleryWidgetBackground !== "disabled") {
       let tempImages = [...images];
       if (settings.galleryWidgetBackground === "random") {
+        // eslint-disable-next-line
         tempImages = tempImages.sort(() => 0.5 - Math.random());
       } else {
         // "recent"
-        tempImages = tempImages.sort((a: any, b: any) => new Date(b.uploadDate || 0).getTime() - new Date(a.uploadDate || 0).getTime());
+        tempImages = tempImages.sort((a: ImageMetadata, b: ImageMetadata) => new Date(b.uploadDate || 0).getTime() - new Date(a.uploadDate || 0).getTime());
       }
       previewImages = tempImages.slice(0, 6);
     }
@@ -46,11 +46,14 @@ export default async function Home() {
   } catch (e) {
     console.error("Home Page: Failed to read DB", e);
   }
+  // eslint-disable-next-line
+  const randomImages = [...images].sort(() => 0.5 - Math.random()).slice(0, 15);
+
   return (
     <div className="relative min-h-screen">
       {settings.dashboardBackground === "aurora" ? <AuroraBackground /> :
         settings.dashboardBackground === "bokeh" ? <BokehBackground /> :
-          settings.dashboardBackground === "kenburns" ? <KenBurnsBackground images={[...images].sort(() => 0.5 - Math.random()).slice(0, 15)} /> :
+          settings.dashboardBackground === "kenburns" ? <KenBurnsBackground images={randomImages} /> :
             settings.dashboardBackground === "cybergrid" ? <CyberGridBackground /> :
               <ParticleBackground />}
 
@@ -84,7 +87,8 @@ export default async function Home() {
             {/* Blurred Abstract Wallpaper Preview */}
             {previewImages.length > 0 && (
               <div className={`absolute inset-0 z-0 grid grid-cols-2 gap-1 p-2 opacity-60 mix-blend-luminosity group-hover:scale-105 group-hover:opacity-80 transition-all duration-700 pointer-events-none ${blurClass}`}>
-                {previewImages.map((img: any) => (
+                {previewImages.map((img: ImageMetadata) => (
+                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     key={img.id}
                     src={`/api/raw/${img.id}`}

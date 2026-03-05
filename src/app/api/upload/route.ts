@@ -11,8 +11,8 @@ export async function POST(req: NextRequest) {
     try {
         const formData = await req.formData();
         const file = formData.get("file") as unknown as File | null;
-        let widthStr = formData.get("width") as string | null;
-        let heightStr = formData.get("height") as string | null;
+        const widthStr = formData.get("width") as string | null;
+        const heightStr = formData.get("height") as string | null;
         const overwrite = formData.get("overwrite") === "true";
 
         if (!file) {
@@ -86,8 +86,8 @@ export async function POST(req: NextRequest) {
             categoryData = {
                 width: 0,
                 height: 0,
-                orientation: "Unknown" as any,
-                aspectRatioBucket: "Custom" as any
+                orientation: "Unknown",
+                aspectRatioBucket: "Custom"
             };
         }
 

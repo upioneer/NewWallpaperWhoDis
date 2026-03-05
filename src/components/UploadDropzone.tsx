@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { useDropzone } from "react-dropzone";
+import { useDropzone, FileRejection } from "react-dropzone";
 import { UploadCloud, CheckCircle2, AlertCircle, X, Loader2 } from "lucide-react";
 
 export function UploadDropzone() {
@@ -82,12 +82,13 @@ export function UploadDropzone() {
         acceptedFiles.forEach(file => {
             processUpload(file);
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const onDropRejected = useCallback((fileRejections: any[]) => {
+    const onDropRejected = useCallback((fileRejections: FileRejection[]) => {
         // Check if any files were rejected because of the too-many-files rule
         const tooManyFiles = fileRejections.some(rejection =>
-            rejection.errors.some((error: any) => error.code === "too-many-files")
+            rejection.errors.some(error => error.code === "too-many-files")
         );
 
         if (tooManyFiles) {
@@ -97,6 +98,7 @@ export function UploadDropzone() {
                 addMessage("error", `Failed to upload ${rejection.file.name}. Invalid file type or unknown error.`);
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({

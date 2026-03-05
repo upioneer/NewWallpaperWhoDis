@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { Trash2, Image as ImageIcon, Search, UploadCloud, Eye, X, RefreshCw, FolderPlus, Check, Folders, Edit3 } from "lucide-react";
+import { Trash2, Eye, X, RefreshCw, FolderPlus, Check, Folders, Edit3, Image as ImageIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
+import { ImageMetadata } from "@/lib/db";
 
-export function GalleryClient({ initialImages, initialCollections }: { initialImages: any[], initialCollections: { name: string, images: string[] }[] }) {
+export function GalleryClient({ initialImages, initialCollections }: { initialImages: ImageMetadata[], initialCollections: { name: string, images: string[] }[] }) {
     const [images, setImages] = useState(initialImages);
     const [collections, setCollections] = useState(initialCollections);
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
@@ -292,6 +293,7 @@ export function GalleryClient({ initialImages, initialCollections }: { initialIm
 
                             {/* Image Thumbnail Placeholder / Mock using raw path (since we don't have a static router pointing to the raw dir yet) */}
                             <div className="aspect-video bg-[var(--muted)]/50 flex flex-col items-center justify-center text-[var(--muted-foreground)] relative">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src={`/api/raw/${img.id}`}
                                     alt={img.filename}
@@ -370,6 +372,7 @@ export function GalleryClient({ initialImages, initialCollections }: { initialIm
                     >
                         <X size={24} />
                     </button>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                         src={`/api/raw/${previewImage}`}
                         alt="Preview"
@@ -427,7 +430,7 @@ export function GalleryClient({ initialImages, initialCollections }: { initialIm
                                     setSelectedImages([]);
                                     setEditingCollectionName(null);
                                     router.refresh(); // Refresh to pull updated collections in top-level app state if needed
-                                } catch (err) {
+                                } catch {
                                     alert("Error saving collection.");
                                 }
                             }}

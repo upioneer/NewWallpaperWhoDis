@@ -23,9 +23,30 @@ export interface SystemSettings {
     hasCompletedOnboarding?: boolean;
 }
 
+export type TriggerType = "time" | "request" | "random";
+
+export interface ProfileMetadata {
+    id: string;
+    name: string;
+    slug: string;
+    createdAt: string;
+    filters: {
+        orientation?: string[];
+        aspectRatioBuckets?: string[];
+        colorBucket?: string[];
+        luminosity?: string[];
+        tags?: string[];
+        collection?: string;
+    };
+    triggerType: TriggerType;
+    intervalMinutes?: number;
+    lastRotatedAt?: string;
+    currentImageId?: string;
+}
+
 export interface DatabaseSchema {
     images: Record<string, ImageMetadata>;
-    profiles: Record<string, any>; // defined later in phase 2 MVP
+    profiles: Record<string, ProfileMetadata>;
     settings: SystemSettings;
     collections: Record<string, string[]>;
 }
@@ -63,7 +84,7 @@ export async function readDb(): Promise<DatabaseSchema> {
     await ensureDbExists();
     try {
         const data = await fs.readFile(DB_FILE, 'utf8');
-        const parsed = JSON.parse(data) as any;
+        const parsed = JSON.parse(data) as Partial<DatabaseSchema>;
 
         // Safety Fallback for schema upgrades
         if (!parsed.settings) parsed.settings = DEFAULT_DB.settings;

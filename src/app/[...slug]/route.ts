@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readDb } from "@/lib/db";
+import { readDb, ImageMetadata } from "@/lib/db";
 import { getProfileBySlug, updateProfile } from "@/lib/profiles";
 import { readFile } from "fs/promises";
 import path from "path";
@@ -26,16 +26,16 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
         // --- ENFORCE CATEGORY SCOPING ---
         if (profile.filters?.collection && db.collections && db.collections[profile.filters.collection as string]) {
             const allowedIds = db.collections[profile.filters.collection as string];
-            images = images.filter((img: any) => allowedIds.includes(img.id));
+            images = images.filter((img: ImageMetadata) => allowedIds.includes(img.id));
         }
 
         if (profile.filters?.orientation && profile.filters.orientation.length > 0) {
-            images = images.filter((img: any) => profile.filters!.orientation!.includes(img.orientation || "Unknown"));
+            images = images.filter((img: ImageMetadata) => profile.filters!.orientation!.includes(img.orientation || "Unknown"));
         }
 
 
         if (profile.filters?.luminosity && profile.filters.luminosity.length > 0) {
-            images = images.filter((img: any) => profile.filters!.luminosity!.includes(img.luminosity || "Dark"));
+            images = images.filter((img: ImageMetadata) => profile.filters!.luminosity!.includes(img.luminosity || "Dark"));
         }
 
         if (images.length === 0) {
@@ -126,7 +126,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
 
             return response;
 
-        } catch (fsError) {
+        } catch (error) {
             console.error(`File physically missing from disk: ${selectedImage.filename}`);
             return new NextResponse("Image broken or missing from disk", { status: 404 });
         }

@@ -142,7 +142,7 @@ export function OnboardingWizard({ hasCompletedOnboarding }: { hasCompletedOnboa
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                             {!profileCreated ? (
                                 <>
-                                    <p className="text-[var(--foreground)] text-center mb-2">Let's create your first rotation link. You'll paste this URL into Wallpaper Engine or Plash.</p>
+                                    <p className="text-[var(--foreground)] text-center mb-2">Let&apos;s create your first rotation link. You&apos;ll paste this URL into Wallpaper Engine or Plash.</p>
 
                                     <div className="space-y-2">
                                         <label className="text-sm font-semibold text-[var(--muted-foreground)]">Display Name</label>

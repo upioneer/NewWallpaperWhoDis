@@ -21,7 +21,7 @@ export async function POST(req: Request) {
         await writeDb(db);
 
         return NextResponse.json({ success: true, collection: name, count: images.length });
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error("Collections POST Error:", e);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
@@ -53,7 +53,7 @@ export async function DELETE(req: Request) {
         }
 
         return NextResponse.json({ success: true });
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error("Collections DELETE Error:", e);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
