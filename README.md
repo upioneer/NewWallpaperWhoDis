@@ -15,6 +15,13 @@ The system automatically scans your files, processes critical metadata (like Asp
 ### Settings
 ![Settings](assets/images/screenshot_settings.png)
 
+## Minimum Hardware Requirements
+
+Thanks to the flat-file architecture and Next.js static asset serving, **New Wallpaper Who Dis** is exceptionally lightweight. It does not require a traditional relational database (like PostgreSQL or MySQL).
+
+*   **LXC (Linux Container):** 1 Core, 256MB RAM (Recommended for Proxmox users)
+*   **VM (Virtual Machine):** 1 vCPU, 512MB RAM
+
 ## Running the application
 
 The easiest way to deploy New Wallpaper Who Dis is by downloading the pre-configured `docker-compose.yml` file and running it. You do not need to download the full source code.
