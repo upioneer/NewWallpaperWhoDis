@@ -49,9 +49,15 @@ next-env.d.ts
 # Explicit user project configurations
 .agent/
 .agent
+agent.md
+brand.md
+design.md
 github.md
+plan.md
 scaffold.ps1
+skills.md
 testing.md
+todo.md
 
 # Allow specific mandatory files
 !readme.md
