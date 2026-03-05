@@ -14,5 +14,3 @@ services:
     environment:
       - NODE_ENV=production
     restart: unless-stopped
-    sysctls:
-      - net.ipv4.ip_unprivileged_port_start=0
