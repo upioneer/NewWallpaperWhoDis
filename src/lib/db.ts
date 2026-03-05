@@ -26,7 +26,7 @@ export interface DatabaseSchema {
     images: Record<string, ImageMetadata>;
     profiles: Record<string, any>; // defined later in phase 2 MVP
     settings: SystemSettings;
-    collections?: Record<string, string[]>;
+    collections: Record<string, string[]>;
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data');

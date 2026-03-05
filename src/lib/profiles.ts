@@ -16,6 +16,7 @@ export interface ProfileMetadata {
         colorBucket?: string[];
         luminosity?: string[];
         tags?: string[]; // For Phase 2 manual tagging
+        collection?: string;
     };
 
     // Rotation rules
