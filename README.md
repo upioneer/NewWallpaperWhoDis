@@ -4,6 +4,17 @@
 
 The system automatically scans your files, processes critical metadata (like Aspect Ratio, Orientation, and Luminosity), and serves them to your devices via fully customized rotation profiles. Create custom URL slugs that trigger new wallpapers on demand or via timed intervals. No more complex database configurations or manual tagging—just drag, drop, and let the engine curate your screens.
 
+## Screenshots
+
+### Home
+![Home](assets/images/screenshot_home.png)
+
+### Gallery
+![Gallery](assets/images/screenshot_gallery.png)
+
+### Settings
+![Settings](assets/images/screenshot_settings.png)
+
 ## Running the application
 
 The easiest way to deploy New Wallpaper Who Dis is by downloading the pre-configured `docker-compose.yml` file and running it. You do not need to download the full source code.
