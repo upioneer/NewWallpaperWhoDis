@@ -47,6 +47,8 @@ next-env.d.ts
 !/data/.gitkeep
 
 # Explicit user project configurations
+.agent/
+.agent
 github.md
 scaffold.ps1
 testing.md

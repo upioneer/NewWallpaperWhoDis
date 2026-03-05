@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import diskusage from 'diskusage';
 import { promises as fs } from 'fs';
+// using fs promises above
 import path from 'path';
 
 const UPLOAD_DIR = path.join(process.cwd(), 'wallpapers');
@@ -29,15 +29,18 @@ export async function GET() {
     try {
         const platform = process.platform;
         // On Windows, use 'c:' as default volume if cwd isn't enough, otherwise use process.cwd()
-        const rootPath = platform === 'win32' ? process.cwd().split(path.sep)[0] : '/';
+        const rootPath = platform === 'win32' ? process.cwd().split(path.sep)[0] + '\\\\' : '/';
 
-        const usage = await diskusage.check(rootPath);
+        const stats = await fs.statfs(rootPath);
+        const total = stats.blocks * stats.bsize;
+        const free = stats.bavail * stats.bsize;
+
         const folderSize = await getFolderSize(UPLOAD_DIR);
 
         return NextResponse.json({
-            total: usage.total,
-            free: usage.free,
-            used: usage.total - usage.free,
+            total: total,
+            free: free,
+            used: total - free,
             wallpapersSize: folderSize,
         });
     } catch (error) {

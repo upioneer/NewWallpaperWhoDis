@@ -2,7 +2,10 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Running the application
 
-This project provides a pre-configured docker-compose.yml for easy deployment.
+The easiest way to deploy New Wallpaper Who Dis is by downloading the pre-configured `docker-compose.yml` file and running it. You do not need to download the full source code.
+
+1. Download the `docker-compose.yml` file to your server or local machine into an empty directory.
+2. Run the following command:
 
 ```bash
 docker-compose up -d
