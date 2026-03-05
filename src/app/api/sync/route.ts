@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readdir, stat, unlink } from "fs/promises";
+import { readdir, stat, unlink, copyFile } from "fs/promises";
 import path from "path";
 import { readDb, writeDb } from "@/lib/db";
 // We use sharp on the backend to figure out dimensions and color metrics
@@ -15,6 +15,28 @@ export async function POST() {
         let files: string[] = [];
         try {
             files = await readdir(UPLOAD_DIR);
+
+            // Soft Onboarding: If the user's mapped volume is completely empty (0 files),
+            // auto-clone the default Unsplash wallpapers bundled inside the Docker image.
+            if (files.length === 0) {
+                const BUNDLED_DIR = path.join(process.cwd(), "public", "bundled-wallpapers");
+                try {
+                    const bundledFiles = await readdir(BUNDLED_DIR);
+                    for (const bFile of bundledFiles) {
+                        try {
+                            await copyFile(path.join(BUNDLED_DIR, bFile), path.join(UPLOAD_DIR, bFile));
+                            files.push(bFile); // Register it immediately for the sync pass below
+                        } catch (copyErr) {
+                            console.error(`Failed to clone bundled wallpaper ${bFile}`, copyErr);
+                        }
+                    }
+                    if (bundledFiles.length > 0) {
+                        console.log(`[Onboarding] Successfully cloned ${bundledFiles.length} default wallpapers into empty volume.`);
+                    }
+                } catch {
+                    // Bundled dir might not exist (e.g. running outside of docker or build missing), degrade gracefully
+                }
+            }
         } catch {
             // Directory might not exist yet
             return NextResponse.json({ success: true, syncedCount: 0 });
