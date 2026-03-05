@@ -1,8 +1,8 @@
 # New Wallpaper Who Dis
 
-**New Wallpaper Who Dis** is a lightweight, self-hosted wallpaper management server and dynamic rotation engine. Built on a zero-maintenance "flat-file" architecture, it allows you to manage massive wallpaper collections simply by dropping images into a directory.
+**New Wallpaper Who Dis** is a lightweight, self hosted wallpaper management server and dynamic rotation engine. Built on a zero maintenance "flat file" architecture, it allows you to manage massive wallpaper collections simply by dropping images into a directory.
 
-The system automatically scans your files, processes critical metadata (like Aspect Ratio, Orientation, and Luminosity), and serves them to your devices via fully customized rotation profiles. Create custom URL slugs that trigger new wallpapers on demand or via timed intervals. No more complex database configurations or manual tagging—just drag, drop, and let the engine curate your screens.
+The system automatically scans your files, processes critical metadata (like Aspect Ratio, Orientation, and Luminosity), and serves them to your devices via fully customized rotation profiles. Create custom URL slugs that trigger new wallpapers on demand or via timed intervals. No more complex database configurations or manual tagging. Just drag, drop, and let the engine curate your screens.
 
 ## Screenshots
 
@@ -17,14 +17,14 @@ The system automatically scans your files, processes critical metadata (like Asp
 
 ## Minimum Hardware Requirements
 
-Thanks to the flat-file architecture and Next.js static asset serving, **New Wallpaper Who Dis** is exceptionally lightweight. It does not require a traditional relational database (like PostgreSQL or MySQL).
+Thanks to the flat file architecture and Next.js static asset serving, **New Wallpaper Who Dis** is exceptionally lightweight. It does not require a traditional relational database (like PostgreSQL or MySQL).
 
 *   **LXC (Linux Container):** 1 Core, 256MB RAM (Recommended for Proxmox users)
 *   **VM (Virtual Machine):** 1 vCPU, 512MB RAM
 
 ## Running the application
 
-The easiest way to deploy New Wallpaper Who Dis is by downloading the pre-configured `docker-compose.yml` file and running it. You do not need to download the full source code.
+The easiest way to deploy New Wallpaper Who Dis is by downloading the preconfigured `docker-compose.yml` file and running it. You do not need to download the full source code.
 
 1. Download the `docker-compose.yml` file to your server or local machine into an empty directory.
 2. Run the following command:
@@ -65,12 +65,12 @@ If you are hosting this Docker container inside an **Unprivileged Proxmox LXC Co
 
 ## Architecture & Resiliency
 
-This project is built on a **Flat File Architecture**, prioritizing simplicity, maintenance-free operation, and platform agnosticism. 
+This project is built on a **Flat File Architecture**, prioritizing simplicity, maintenance free operation, and platform agnosticism. 
 
-- **Drag-and-Drop Maintenance**: The `/wallpapers` folder on your hard drive is the ultimate source of truth. You don't need to use the web application to manage your library. You can literally drag hundreds of files directly into the folder via Windows Explorer, macOS Finder, or an FTP client. When the app boots or receives a request, the background Auto-Sync crawler automatically discovers, measures, and safely ingests any new files into the gallery web UI.
+- **Drag and Drop Maintenance**: The `/wallpapers` folder on your hard drive is the ultimate source of truth. You don't need to use the web application to manage your library. You can literally drag hundreds of files directly into the folder via Windows Explorer, macOS Finder, or an FTP client. When the app boots or receives a request, the background Auto Sync crawler automatically discovers, measures, and safely ingests any new files into the gallery web UI.
 - **Aggressive Purging**: Unsupported files (e.g. PDFs, TXT, or EXEs) dropped into the folder are aggressively purged by the synchronization engine to prevent bloat and security footprint expansion.
-- **Disposable Database Cache**: The internal `/data/db.json` database acts strictly as a high-speed cache for tracking advanced image metadata (like dominant color schemas and orientation tags) to prevent re-processing identical files. **If this file is manually deleted or corrupted, the app will gracefully recover without crashing**. It instantly rebuilds a fresh database skeleton, and the Auto-Sync crawler automatically repopulates all dimensions and tags by rescanning the physical disk.
+- **Disposable Database Cache**: The internal `/data/db.json` database acts strictly as a high speed cache for tracking advanced image metadata (like dominant color schemas and orientation tags) to prevent reprocessing identical files. **If this file is manually deleted or corrupted, the app will gracefully recover without crashing**. It instantly rebuilds a fresh database skeleton, and the Auto Sync crawler automatically repopulates all dimensions and tags by rescanning the physical disk.
 
 ## Licensing & Default Assets
 
-The core codebase is licensed under the terms described in (`license.md`). The  default wallpapers included upon installation to provide a softer onboarding experience are all royalty-free and generously captured by creators on Unsplash. Please refer to [`LICENSE-ASSETS.md`](./LICENSE-ASSETS.md) for full image attribution and links to the original artists.
+The core codebase is licensed under the terms described in (`license.md`). The  default wallpapers included upon installation to provide a softer onboarding experience are all royalty free and generously captured by creators on Unsplash. Please refer to [`LICENSE-ASSETS.md`](./LICENSE-ASSETS.md) for full image attribution and links to the original artists.
