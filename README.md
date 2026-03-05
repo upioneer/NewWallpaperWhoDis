@@ -22,6 +22,24 @@ If you intend to expose the service to the internet, it is highly recommended to
 2. Ensure your reverse proxy is connected to the same Docker network as this application, or simply forward traffic to port `6767` on the host machine.
 3. Pass standard headers (e.g., `Host`, `X-Forwarded-For`, `X-Forwarded-Proto`) in your proxy settings to ensure Next.js routing functions securely over HTTPS.
 
+## Troubleshooting
+
+### Proxmox LXC Permission Denied Error (`net.ipv4.ip_unprivileged_port_start`)
+
+If you are hosting this Docker container inside an **Unprivileged Proxmox LXC Container**, you may experience a fatal crash during `docker-compose up -d` returning this specific OCI runtime error: 
+`open sysctl net.ipv4.ip_unprivileged_port_start file: reopen fd 8: permission denied`
+
+**The Cause:** A recent security patch for `containerd.io` (specifically version `1.7.28-2` patching CVE-2025-52881) broke Docker compatibility with Proxmox AppArmor profiles. Unprivileged LXC containers will proactively deny the Docker daemon permission to bind internal container networking interfaces.
+
+**The Fix:** You must downgrade `containerd.io` inside your LXC container to a version prior to `1.7.28-2` (such as `1.7.28-1` or `1.7.24-1`) until an upstream patch is released by the Docker team.
+
+1. Check your available package versions:
+   `sudo apt-cache policy containerd.io`
+2. Force install the stable version (replace with your specific distribution suffix):
+   `sudo apt install --allow-downgrades containerd.io=1.7.28-1~ubuntu.24.04~noble`
+3. Restart the Docker daemon and spin the container back up:
+   `sudo systemctl restart docker && sudo docker compose up -d`
+
 ## Architecture & Resiliency
 
 This project is built on a **Flat File Architecture**, prioritizing simplicity, maintenance-free operation, and platform agnosticism. 
