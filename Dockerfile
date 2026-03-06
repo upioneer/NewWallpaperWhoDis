@@ -26,6 +26,9 @@ RUN npm run build
 FROM base AS runner
 WORKDIR /app
 
+LABEL org.opencontainers.image.source="https://github.com/upioneer/NewWallpaperWhoDis"
+LABEL org.opencontainers.image.description="A lightweight, self-hosted wallpaper management server and dynamic rotation engine built on a zero-maintenance flat-file architecture."
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
