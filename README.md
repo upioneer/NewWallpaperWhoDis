@@ -2,7 +2,17 @@
 
 **New Wallpaper Who Dis** is a lightweight, self hosted wallpaper management server and dynamic rotation engine. Built on a zero maintenance "flat file" architecture, it allows you to manage massive wallpaper collections simply by dropping images into a directory.
 
-The system automatically scans your files, processes critical metadata (like Aspect Ratio, Orientation, and Luminosity), and serves them to your devices via fully customized rotation profiles. Create custom URL slugs that trigger new wallpapers on demand or via timed intervals. No more complex database configurations or manual tagging. Just drag, drop, and let the engine curate your screens.
+The system automatically scans your files, processes critical metadata (like aspect ratio, orientation, and luminosity), and serves them to your devices via fully customized rotation profiles. 
+
+**Set It and Forget It**: Transform any endpoint (Raspberry Pi, old iPad, Smart TV) into a dynamic digital canvas with zero configuration on the device itself. Simply point the endpoint's browser to your custom URL, and manage multiple displays remotely from a friendly, easy to use **Single Pane of Glass** web UI. No more complex database configurations, manual tagging, or touching the physical displays when you want to change images. Just drag, drop, and let the engine curate your screens.
+
+## Display Kiosks & Dumb Terminal Backups (New in v0.5)
+
+The `/display/[slug]` endpoint goes beyond serving raw images by wrapping your profiles in a fully interactive, GPU accelerated Web Player. 
+
+- **Cinematic Transitions:** Fades, slide ins, and Ken Burns panning effects natively rendered in browser.
+- **HUD Widget Engine:** Overlay a transparent 3x3 grid containing live OpenWeatherMap conditions, local clocks, geolocations, and freeform text messages natively onto your visual rotation.
+- **The "Dumb Terminal" Backup:** Don't have a modern tablet? No problem. If you point a legacy smart TV, a low power e-Ink display, or a locked down browser that disables JavaScript completely to your Kiosk URL, the server instantly detects the failure and gracefully falls back to injecting raw `<meta http-equiv="refresh">` HTML elements into the page header. This ensures your endpoint will physically force restart and rotate your wall art safely forever, no matter how "dumb" the terminal is!
 
 ## Screenshots
 
@@ -24,10 +34,15 @@ Thanks to the flat file architecture and Next.js static asset serving, **New Wal
 
 ## Running the application
 
-The easiest way to deploy New Wallpaper Who Dis is by downloading the preconfigured `docker-compose.yml` file and running it. You do not need to download the full source code.
+To run New Wallpaper Who Dis, you will need **Docker** installed on your system. If you do not have Docker yet, download and install the appropriate version for your Operating System:
+- [Docker Desktop for Mac](https://docs.docker.com/desktop/install/mac-install/)
+- [Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/)
+- [Docker Engine for Linux](https://docs.docker.com/engine/install/)
 
-1. Download the `docker-compose.yml` file to your server or local machine into an empty directory.
-2. Run the following command:
+Once Docker is running, the absolute easiest way to deploy the platform is by downloading the preconfigured [docker-compose.yml](https://raw.githubusercontent.com/upioneer/NewWallpaperWhoDis/main/docker-compose.yml) file. You do not need to download or compile the full source code manually.
+
+1. Download the [`docker-compose.yml`](https://raw.githubusercontent.com/upioneer/NewWallpaperWhoDis/main/docker-compose.yml) file and save it into a new, empty folder on your machine.
+2. Open your terminal or command prompt, navigate into that folder, and run:
 
 ```bash
 docker-compose up -d
