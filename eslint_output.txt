@@ -1,0 +1,59 @@
+
+C:\Users\hgran\OneDrive\Documents\code\Projects\NewWallpaperWhoDis\src\app\[...slug]\route.ts
+  129:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\hgran\OneDrive\Documents\code\Projects\NewWallpaperWhoDis\src\app\display\[...slug]\KioskClient.tsx
+  12:54  warning  'triggerType' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  13:56  error    Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\hgran\OneDrive\Documents\code\Projects\NewWallpaperWhoDis\src\app\display\[...slug]\KioskClient.tsx:13:56
+  11 |
+  12 | export function KioskClient({ slug, intervalSeconds, triggerType, transitionType, initialImageId }: KioskClientProps) {
+> 13 |     const [layerA, setLayerA] = useState(`/${slug}?t=${Date.now()}`);
+     |                                                        ^^^^^^^^^^ Cannot call impure function
+  14 |     const [layerB, setLayerB] = useState<string | null>(null);
+  15 |     const [activeLayer, setActiveLayer] = useState<'A' | 'B'>('A');
+  16 |     const [lastImageId, setLastImageId] = useState(initialImageId);  react-hooks/purity
+  61:22  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  72:8   warning  React Hook useEffect has a missing dependency: 'swapImage'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+  78:13  error    'base' is never reassigned. Use 'const' instead                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        prefer-const
+  95:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @next/next/no-img-element
+  96:24  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @next/next/no-img-element
+
+C:\Users\hgran\OneDrive\Documents\code\Projects\NewWallpaperWhoDis\src\app\layout.tsx
+  33:12  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\hgran\OneDrive\Documents\code\Projects\NewWallpaperWhoDis\src\components\CyberGridBackground.tsx
+  36:13  warning  'time' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\hgran\OneDrive\Documents\code\Projects\NewWallpaperWhoDis\src\components\SettingsClient.tsx
+   16:66   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  199:62   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  217:137  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\hgran\OneDrive\Documents\code\Projects\NewWallpaperWhoDis\src\components\widgets\ClockWidget.tsx
+  8:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\hgran\OneDrive\Documents\code\Projects\NewWallpaperWhoDis\src\components\widgets\ClockWidget.tsx:8:9
+   6 |
+   7 |     useEffect(() => {
+>  8 |         setTime(new Date());
+     |         ^^^^^^^ Avoid calling setState() directly within an effect
+   9 |         const timer = setInterval(() => setTime(new Date()), 1000);
+  10 |         return () => clearInterval(timer);
+  11 |     }, []);  react-hooks/set-state-in-effect
+
+C:\Users\hgran\OneDrive\Documents\code\Projects\NewWallpaperWhoDis\src\components\widgets\WeatherWidget.tsx
+  11:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Γ£û 15 problems (7 errors, 8 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

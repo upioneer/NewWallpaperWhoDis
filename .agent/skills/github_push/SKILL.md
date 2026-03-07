@@ -7,6 +7,9 @@ description: Specialized skill for pushing to GitHub, verifying configuration, a
 
 When the user asks to push, deploy, or sync with GitHub, follow these instructions exactly:
 
+0. **ALWAYS ASK BEFORE COMMITTING**
+   You MUST NEVER attempt a `git commit` or `git push` autonomously. Always summarize the files to be staged, the proposed commit message, and explicitly ask the user for permission before executing the commit commands.
+
 1. **Update Project Documentation**
    Before verifying any configuration or initiating git operations, you MUST proactively review the recent conversation history and codebase changes. Verify that all project documentation files (`todo.md`, `plan.md`, `design.md`, `testing.md`, `CHANGELOG.md`, `readme.md`) accurately reflect the current state of the application. If you have completed new features, bug fixes, or architectural changes, automatically update these tracking files and stage them for the commit.
 

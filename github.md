@@ -22,8 +22,11 @@ When an agent sees this file:
 4. Verify Visibility (Public/Private) if the user has not declared.
 5. Initialize git (`git init`) if not already initialized.
 6. Configure local identity using variables above.
-7. Evaluate modified files to determine if a new semantic version tag (e.g., v0.2.0) is warranted. Skip bumping for documentation-only changes.
-8. Prompt the user with the proposed version bump (or skip) before committing.
+7. Evaluate modified files to determine if a new semantic version tag (`v[x].[y].[z]`) is warranted. 
+   - **[x] Major Version:** Major structural overhauls or breaking changes.
+   - **[y] Minor Version:** New features or noticeable UI/UX enhancements.
+   - **[z] Patch Version:** Bug fixes, documentation, or cosmetic non-functional changes (e.g., typos).
+   - Skip bumping for documentation-only changes entirely.
 9. Make commit and optionally tag the commit (e.g., `git tag v0.2.0`).
 10. Push to `main` and explicitly push tags (`git push origin --tags`).
 

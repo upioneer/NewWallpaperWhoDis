@@ -1,0 +1,12 @@
+
+> new-wallpaper-who-dis@0.4.0 lint
+> eslint
+
+
+C:\Users\hgran\OneDrive\Documents\code\Projects\NewWallpaperWhoDis\src\components\SettingsClient.tsx
+  346:49  error  'currentWidgets' is never reassigned. Use 'const' instead  prefer-const
+  362:45  error  'currentWidgets' is never reassigned. Use 'const' instead  prefer-const
+
+Γ£û 2 problems (2 errors, 0 warnings)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+

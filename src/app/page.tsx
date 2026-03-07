@@ -10,6 +10,8 @@ import { readDb, ImageMetadata, SystemSettings } from "@/lib/db";
 import Link from 'next/link';
 import { GlobalNav } from "@/components/GlobalNav";
 import { OnboardingWizard } from "@/components/OnboardingWizard";
+import { UpdateBanner } from "@/components/UpdateBanner";
+import packageJson from "../../package.json";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -142,6 +144,10 @@ export default async function Home() {
         </div>
 
       </main>
+
+      {/* GitHub Update Listener */}
+      <UpdateBanner currentVersion={packageJson.version} />
+
     </div>
   );
 }

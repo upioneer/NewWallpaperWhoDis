@@ -1,3 +1,3 @@
-[submodule ".agent/apps"]
-	path = .agent/apps
+[submodule "apps"]
+	path = apps
 	url = https://github.com/upioneer/NewWallpaperWhoDis-Apps.git

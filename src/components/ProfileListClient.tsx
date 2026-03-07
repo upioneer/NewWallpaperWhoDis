@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Monitor, Plus, ExternalLink, Trash2 } from "lucide-react";
+import { Monitor, Plus, ExternalLink, Trash2, QrCode, X } from "lucide-react";
 import { CreateProfileModal } from "./CreateProfileModal";
+import { QRCodeSVG } from 'qrcode.react';
 import { useRouter } from "next/navigation";
 import { ProfileMetadata, SystemSettings } from "@/lib/db";
 
 export function ProfileListClient({ initialProfiles, categories, luminosities, collections, settings, localIp }: { initialProfiles: ProfileMetadata[], categories: string[], luminosities: string[], collections: string[], settings?: SystemSettings, localIp?: string }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProfile, setEditingProfile] = useState<ProfileMetadata | null>(null);
+    const [qrProfile, setQrProfile] = useState<{ name: string, url: string } | null>(null);
     const router = useRouter();
 
     const getBaseUrl = () => {
@@ -107,25 +109,33 @@ export function ProfileListClient({ initialProfiles, categories, luminosities, c
                             </div>
                             <div className="flex flex-col gap-2 items-end">
                                 <div className="flex gap-2">
-                                    <a
-                                        href={`${baseUrl}/${profile.slug}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] transition-colors text-xs font-medium flex items-center gap-1.5"
-                                        title="Raw Image API"
+                                    <button
+                                        onClick={() => setQrProfile({ name: profile.name, url: `${baseUrl}/display/${profile.slug}` })}
+                                        className="px-3 py-1.5 rounded-lg border border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-[var(--primary-foreground)] transition-colors text-xs font-bold flex items-center gap-1.5"
+                                        title="Scan QR Code to Pair Device"
                                     >
-                                        <ExternalLink size={12} />
-                                        Raw Image
-                                    </a>
+                                        <QrCode size={12} />
+                                        Pair Device
+                                    </button>
                                     <a
                                         href={`${baseUrl}/display/${profile.slug}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="px-3 py-1.5 rounded-lg border border-[var(--primary)]/50 bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)] hover:text-[var(--primary-foreground)] transition-colors text-xs font-bold flex items-center gap-1.5 shadow-[0_0_10px_var(--primary)]/20"
-                                        title="Interactive Kiosk Player"
+                                        title="Launch Interactive Kiosk Player"
                                     >
                                         <Monitor size={12} />
-                                        Display Kiosk
+                                        Launch Display Kiosk
+                                    </a>
+                                    <a
+                                        href={`${baseUrl}/${profile.slug}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] transition-colors text-xs font-medium flex items-center gap-1.5"
+                                        title="Raw API Image Stream"
+                                    >
+                                        <ExternalLink size={12} />
+                                        Raw API Stream
                                     </a>
                                 </div>
                                 <div className="flex gap-2 w-full mt-2">
@@ -158,6 +168,50 @@ export function ProfileListClient({ initialProfiles, categories, luminosities, c
                 collections={collections}
                 initialData={editingProfile || undefined}
             />
+
+            {/* QR Code Modal */}
+            {qrProfile && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+                    onClick={() => setQrProfile(null)}
+                >
+                    <div
+                        className="bg-[var(--card)] w-full max-w-sm rounded-[1.5rem] p-6 shadow-2xl relative border border-[var(--border)]"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setQrProfile(null)}
+                            className="absolute right-4 top-4 p-2 rounded-full hover:bg-[var(--accent)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <div className="flex flex-col items-center text-center mt-2">
+                            <div className="w-12 h-12 bg-[var(--primary)]/15 text-[var(--primary)] rounded-full flex items-center justify-center mb-4">
+                                <QrCode size={24} />
+                            </div>
+                            <h2 className="text-xl font-bold mb-1">Pair Device</h2>
+                            <p className="text-[var(--muted-foreground)] text-sm mb-6">
+                                Scan this code with a mobile phone, tablet, or Smart TV to instantly launch the <strong className="text-[var(--foreground)]">{qrProfile.name}</strong> kiosk player.
+                            </p>
+
+                            <div className="bg-white p-4 rounded-xl shadow-inner border border-zinc-200">
+                                <QRCodeSVG
+                                    value={qrProfile.url}
+                                    size={200}
+                                    level="H"
+                                    includeMargin={false}
+                                />
+                            </div>
+
+                            <p className="text-xs text-[var(--muted-foreground)] mt-6 bg-[var(--primary)]/10 py-2 px-3 rounded-lg flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-[var(--primary)] border border-[var(--primary)]/50"></span>
+                                Ensure both devices are on the same WiFi network.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
