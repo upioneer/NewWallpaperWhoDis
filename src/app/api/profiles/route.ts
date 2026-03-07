@@ -5,7 +5,7 @@ import { addProfile } from "@/lib/profiles";
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { name, slug, triggerType, intervalMinutes, filters } = body;
+        const { name, slug, triggerType, intervalMinutes, filters, kioskWidgets } = body;
 
         // Basic validation
         if (!name || !slug || !triggerType) {
@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
             slug,
             triggerType,
             intervalMinutes,
+            kioskWidgets: kioskWidgets || [],
             filters: filters || {}
         });
 

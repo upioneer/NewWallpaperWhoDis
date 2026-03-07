@@ -33,7 +33,6 @@ export function CyberGridBackground() {
 
         const mouse = { x: -1000, y: -1000 };
         const gridSize = 40;
-        let time = 0;
 
         const handleMouseMove = (e: MouseEvent) => {
             mouse.x = e.clientX;
@@ -58,7 +57,7 @@ export function CyberGridBackground() {
             const baseColor = isDark ? "rgba(255, 255, 255, 0.03)" : "rgba(0, 0, 0, 0.03)";
 
             ctx.lineWidth = 1;
-            time += 0.01; // For subtle pulse if desired
+            // For subtle pulse if desired
 
             // Draw vertical lines
             for (let x = 0; x <= canvas.width; x += gridSize) {

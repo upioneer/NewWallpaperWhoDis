@@ -15,12 +15,25 @@ export interface ImageMetadata {
     uploadDate: string;
 }
 
+export interface KioskWidget {
+    id: string;
+    type: "clock" | "weather" | "location" | "text";
+    position: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9; // Grid placement
+    enabled: boolean;
+    textValue?: string; // For text widget
+}
+
 export interface SystemSettings {
     dashboardBackground: "particles" | "aurora" | "bokeh" | "kenburns" | "cybergrid";
     galleryWidgetBackground: "random" | "recent" | "disabled";
     galleryWidgetBlur: "none" | "some" | "lots";
     theme?: string;
     hasCompletedOnboarding?: boolean;
+    kioskTransition?: "fade" | "slide" | "kenburns" | "none";
+    weatherApiKey?: string;
+    targetLocation?: string; // Zip or City location specifier
+    publicDomain?: string;
+    urlDisplayPreference?: "slug" | "local" | "domain";
 }
 
 export type TriggerType = "time" | "request" | "random";
@@ -42,6 +55,7 @@ export interface ProfileMetadata {
     intervalMinutes?: number;
     lastRotatedAt?: string;
     currentImageId?: string;
+    kioskWidgets?: KioskWidget[];
 }
 
 export interface DatabaseSchema {
@@ -61,7 +75,9 @@ const DEFAULT_DB: DatabaseSchema = {
         dashboardBackground: "particles",
         galleryWidgetBackground: "random",
         galleryWidgetBlur: "none",
-        hasCompletedOnboarding: false
+        hasCompletedOnboarding: false,
+        kioskTransition: "fade",
+        urlDisplayPreference: "slug"
     },
     collections: {}
 };
@@ -90,6 +106,7 @@ export async function readDb(): Promise<DatabaseSchema> {
         if (!parsed.settings) parsed.settings = DEFAULT_DB.settings;
         if (!parsed.settings.dashboardBackground) parsed.settings.dashboardBackground = "particles";
         if (typeof parsed.settings.hasCompletedOnboarding === 'undefined') parsed.settings.hasCompletedOnboarding = false;
+        if (!parsed.settings.kioskTransition) parsed.settings.kioskTransition = "fade";
         if (!parsed.profiles) parsed.profiles = DEFAULT_DB.profiles;
         if (!parsed.images) parsed.images = DEFAULT_DB.images;
         if (!parsed.collections) parsed.collections = {};

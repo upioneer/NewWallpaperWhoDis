@@ -30,7 +30,7 @@ export default async function RootLayout({
     if (db.settings?.theme) {
       themeClass = db.settings.theme;
     }
-  } catch (e) {
+  } catch {
     // silently fallback if DB not ready
   }
 

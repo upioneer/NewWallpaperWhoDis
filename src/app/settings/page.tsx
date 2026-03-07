@@ -3,12 +3,25 @@ import { Settings } from "lucide-react";
 import { GlobalNav } from "@/components/GlobalNav";
 import { readDb } from "@/lib/db";
 import { SettingsClient } from "@/components/SettingsClient";
+import os from "os";
+import pkg from "../../../package.json";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function SettingsPage() {
     const db = await readDb();
+
+    let localIp = "localhost";
+    const interfaces = os.networkInterfaces();
+    for (const name of Object.keys(interfaces)) {
+        for (const iface of interfaces[name]!) {
+            if (iface.family === 'IPv4' && !iface.internal) {
+                localIp = iface.address;
+                break;
+            }
+        }
+    }
 
     const images = Object.values(db.images || {});
 
@@ -31,7 +44,7 @@ export default async function SettingsPage() {
                 </div>
 
                 {/* Inject interactive Client logic here securely padded with serverside prop data */}
-                <SettingsClient initialSettings={db.settings} backgroundImages={randomImages} />
+                <SettingsClient initialSettings={db.settings} backgroundImages={randomImages} localIp={localIp} appVersion={pkg.version} />
 
             </main>
         </div>
