@@ -1,12 +1,12 @@
 # New Wallpaper Who Dis
 
-**New Wallpaper Who Dis** is a lightweight, self hosted wallpaper management server and dynamic rotation engine. Built on a zero maintenance "flat file" architecture, it allows you to manage massive wallpaper collections simply by dropping images into a directory.
+The ultimate self-hosted wallpaper manager. Turn any endpoint into a Smart Display, and bring lackluster dashboard game current by supercharging them with dynamic, zero-maintenance wallpapers. This cures the frustration of having to update wallpapers manually via CLI. Goodbye terminal, hello GUI!
 
-The system automatically scans your files, processes critical metadata (like aspect ratio, orientation, and luminosity), and serves them to your devices via fully customized rotation profiles. 
+Built on a "flat file" architecture, New Wallpaper Who Dis allows you to manage massive wallpaper collections simply by dropping images into a directory. The system automatically scans your files, processes critical metadata (like aspect ratio, orientation, and luminosity), and serves them to your devices via fully customized rotation profiles. 
 
 **Set It and Forget It**: Transform any endpoint (Raspberry Pi, old iPad, Smart TV) into a dynamic digital canvas with zero configuration on the device itself. Simply point the endpoint's browser to your custom URL, and manage multiple displays remotely from a friendly, easy to use **Single Pane of Glass** web UI. No more complex database configurations, manual tagging, or touching the physical displays when you want to change images. Just drag, drop, and let the engine curate your screens.
 
-## Display Kiosks & Dumb Terminal Backups (New in v0.5)
+## Display Kiosks & Dumb Terminal Backups
 
 The `/display/[slug]` endpoint goes beyond serving raw images by wrapping your profiles in a fully interactive, GPU accelerated Web Player. 
 
