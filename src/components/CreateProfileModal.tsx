@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { X, AlertCircle, Monitor } from "lucide-react";
+import { X, AlertCircle, Monitor, XCircle, Clock, MapPin, CloudSun, Type, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { ProfileMetadata } from "@/lib/db";
+import { ProfileMetadata, KioskWidget } from "@/lib/db";
 
 export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, luminosities, collections, initialData }: { isOpen: boolean, onClose: () => void, onSuccess: () => void, orientations: string[], luminosities: string[], collections: string[], initialData?: Partial<ProfileMetadata> }) {
     const [name, setName] = useState("");
@@ -19,6 +19,11 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
     const [selectedOrientation, setSelectedOrientation] = useState("All");
     const [selectedLuminosity, setSelectedLuminosity] = useState("All");
     const [selectedCollection, setSelectedCollection] = useState("Any Collection");
+
+    // Local Kiosk Widget mapping
+    const [kioskWidgets, setKioskWidgets] = useState<KioskWidget[]>([]);
+    const [activeGridZone, setActiveGridZone] = useState<number | null>(null);
+    const [modalTextValue, setModalTextValue] = useState("");
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -52,6 +57,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
             setSelectedOrientation(initialData.filters?.orientation?.[0] || "All");
             setSelectedLuminosity(initialData.filters?.luminosity?.[0] || "All");
             setSelectedCollection(initialData.filters?.collection || "Any Collection");
+            setKioskWidgets(initialData.kioskWidgets || []);
         } else if (isOpen) {
             setName("");
             setSlug("");
@@ -61,6 +67,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
             setSelectedOrientation("All");
             setSelectedLuminosity("All");
             setSelectedCollection("Any Collection");
+            setKioskWidgets([]);
         }
         setError("");
     }, [isOpen, initialData]);
@@ -90,6 +97,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
                     slug,
                     triggerType,
                     intervalMinutes: triggerType === "time" ? computedMinutes : undefined,
+                    kioskWidgets,
                     filters: {
                         orientation: selectedOrientation === "All" ? [] : [selectedOrientation],
                         luminosity: selectedLuminosity === "All" ? [] : [selectedLuminosity],
@@ -112,6 +120,7 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
             setSelectedOrientation("All");
             setSelectedLuminosity("All");
             setSelectedCollection("Any Collection");
+            setKioskWidgets([]);
             onSuccess();
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -239,6 +248,44 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
                         </div>
 
                         <div className="pt-2">
+                            <label className="block text-sm font-medium mb-1.5 text-[var(--foreground)] flex justify-between">
+                                <span>Kiosk UI Overlays</span>
+                                <span className="font-normal text-[var(--muted-foreground)] text-xs hidden sm:block">Applies only to `/display/...`</span>
+                            </label>
+                            <div className="flex items-center justify-center p-4 border border-[var(--border)] rounded-lg bg-[var(--background)]/30">
+                                <div className="grid grid-cols-3 gap-2 w-full max-w-[280px] aspect-[16/10] bg-black/40 rounded-lg border border-[var(--border)] p-2 relative overflow-hidden shadow-inner">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-[#ec4899]/10 to-transparent pointer-events-none mix-blend-screen" />
+                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(pos => {
+                                        const widget = kioskWidgets.find(w => w.position === pos);
+                                        return (
+                                            <div
+                                                key={pos}
+                                                onClick={() => {
+                                                    setActiveGridZone(pos);
+                                                    if (widget?.type === 'text') {
+                                                        setModalTextValue(widget.textValue || "");
+                                                    } else {
+                                                        setModalTextValue("");
+                                                    }
+                                                }}
+                                                className={`border ${widget ? 'border-[var(--primary)] bg-[var(--primary)]/20 shadow-[0_0_10px_var(--primary)] text-[var(--foreground)]' : 'border-[var(--border)] border-dashed hover:bg-[var(--foreground)]/5 text-[var(--muted-foreground)]'} rounded flex flex-col items-center justify-center text-[10px] cursor-pointer transition-all p-1 text-center relative z-10`}
+                                            >
+                                                {widget ? (
+                                                    <>
+                                                        <span className="font-bold text-[var(--primary)] uppercase tracking-wider text-[9px] drop-shadow-md">{widget.type}</span>
+                                                        {widget.type === "text" && <span className="text-[7px] opacity-70 truncate w-full mt-0.5" title={widget.textValue}>{widget.textValue}</span>}
+                                                    </>
+                                                ) : (
+                                                    <span className="opacity-30 text-lg">+</span>
+                                                )}
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-2">
                             <label className="block text-sm font-medium mb-1.5 text-[var(--foreground)]">Rotation Trigger</label>
                             <div className="grid grid-cols-3 gap-3">
                                 <button type="button" onClick={() => setTriggerType("time")} className={`py-2 px-3 border rounded-lg text-sm font-medium transition-all ${triggerType === "time" ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]" : "border-[var(--border)] bg-[var(--background)] hover:border-[var(--muted-foreground)] text-[var(--muted-foreground)]"}`}>
@@ -322,6 +369,98 @@ export function CreateProfileModal({ isOpen, onClose, onSuccess, orientations, l
 
                 </form>
             </div>
+
+            {activeGridZone !== null && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4" onClick={(e) => {
+                    if (e.target === e.currentTarget) setActiveGridZone(null);
+                }}>
+                    <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 w-full max-w-sm shadow-2xl animate-in fade-in zoom-in duration-200">
+                        <h3 className="font-bold text-lg mb-1 text-center text-[var(--foreground)]">Assign Widget to Profile</h3>
+                        <p className="text-xs text-[var(--muted-foreground)] text-center mb-6">Select a module to overlay on grid zone {activeGridZone}.</p>
+
+                        <div className="grid grid-cols-2 gap-3 mb-6">
+                            {[
+                                { type: "none", icon: XCircle, label: "Empty Zone" },
+                                { type: "clock", icon: Clock, label: "Local Time" },
+                                { type: "location", icon: MapPin, label: "Target Location" },
+                                { type: "weather", icon: CloudSun, label: "Live Weather" },
+                            ].map(option => (
+                                <button
+                                    key={option.type}
+                                    onClick={() => {
+                                        let current = [...kioskWidgets];
+                                        if (option.type === "none") {
+                                            current = current.filter(w => w.position !== activeGridZone);
+                                        } else {
+                                            const existingIndex = current.findIndex(w => w.position === activeGridZone);
+                                            if (existingIndex >= 0) {
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                current[existingIndex] = { ...current[existingIndex], type: option.type as any, textValue: undefined };
+                                            } else {
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                current.push({ id: crypto.randomUUID(), type: option.type as any, position: activeGridZone as any, enabled: true });
+                                            }
+                                        }
+                                        setKioskWidgets(current);
+                                        setActiveGridZone(null);
+                                    }}
+                                    className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--primary)]/10 hover:border-[var(--primary)] transition-all group"
+                                >
+                                    <option.icon className="w-8 h-8 text-[var(--muted-foreground)] group-hover:text-[var(--primary)] transition-colors" strokeWidth={1.5} />
+                                    <span className="text-xs font-semibold text-[var(--foreground)]">{option.label}</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="border-t border-[var(--border)] pt-5">
+                            <label className="text-xs font-bold text-[var(--foreground)] mb-3 flex items-center gap-2 uppercase tracking-wider"><Type size={14} className="text-[var(--primary)]" /> Custom Text Overlays</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Enter a static message..."
+                                    className="flex-1 px-3 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 placeholder:text-[var(--muted-foreground)]"
+                                    value={modalTextValue}
+                                    onChange={(e) => setModalTextValue(e.target.value)}
+                                    maxLength={150}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            const current = [...kioskWidgets];
+                                            const existingIndex = current.findIndex(w => w.position === activeGridZone);
+                                            if (existingIndex >= 0) {
+                                                current[existingIndex] = { ...current[existingIndex], type: "text", textValue: modalTextValue };
+                                            } else {
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                current.push({ id: crypto.randomUUID(), type: "text", position: activeGridZone as any, enabled: true, textValue: modalTextValue });
+                                            }
+                                            setKioskWidgets(current);
+                                            setActiveGridZone(null);
+                                            setModalTextValue("");
+                                        }
+                                    }}
+                                />
+                                <button
+                                    onClick={() => {
+                                        const current = [...kioskWidgets];
+                                        const existingIndex = current.findIndex(w => w.position === activeGridZone);
+                                        if (existingIndex >= 0) {
+                                            current[existingIndex] = { ...current[existingIndex], type: "text", textValue: modalTextValue };
+                                        } else {
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                            current.push({ id: crypto.randomUUID(), type: "text", position: activeGridZone as any, enabled: true, textValue: modalTextValue });
+                                        }
+                                        setKioskWidgets(current);
+                                        setActiveGridZone(null);
+                                        setModalTextValue("");
+                                    }}
+                                    className="px-4 py-2 bg-[var(--primary)] text-[var(--foreground)] rounded-lg text-sm font-bold flex items-center shadow-lg shadow-[var(--primary)]/20 hover:scale-[1.03] active:scale-95 transition-all"
+                                >
+                                    <Save size={18} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

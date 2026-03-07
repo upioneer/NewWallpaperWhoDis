@@ -6,6 +6,7 @@ import { CyberGridBackground } from "@/components/CyberGridBackground";
 import { ProfileListClient } from "@/components/ProfileListClient";
 import { GlobalNav } from "@/components/GlobalNav";
 import { readDb, ImageMetadata } from "@/lib/db";
+import os from "os";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -13,6 +14,18 @@ export const revalidate = 0;
 export default async function ProfilesPage() {
     const db = await readDb();
     const settings = db.settings || { dashboardBackground: "particles", galleryWidgetBackground: "random", galleryWidgetBlur: "none" };
+
+    let localIp = "localhost";
+    const interfaces = os.networkInterfaces();
+    for (const name of Object.keys(interfaces)) {
+        for (const iface of interfaces[name]!) {
+            if (iface.family === 'IPv4' && !iface.internal) {
+                localIp = iface.address;
+                break;
+            }
+        }
+    }
+
     const profiles = Object.values(db.profiles || {});
     // Extract unique orientations to use as Profile scopes
     const images = Object.values(db.images || {});
@@ -34,7 +47,14 @@ export default async function ProfilesPage() {
             <GlobalNav title="Profiles & Slugs" />
 
             <main className="container mx-auto px-4 pt-12 pb-24 max-w-5xl">
-                <ProfileListClient initialProfiles={profiles} categories={uniqueCategories} luminosities={uniqueLuminosities} collections={collections} />
+                <ProfileListClient
+                    initialProfiles={profiles}
+                    categories={uniqueCategories}
+                    luminosities={uniqueLuminosities}
+                    collections={collections}
+                    settings={settings}
+                    localIp={localIp}
+                />
             </main>
         </div>
     );

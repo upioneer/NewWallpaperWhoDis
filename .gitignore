@@ -55,9 +55,6 @@ github.md
 plan.md
 scaffold.ps1
 skills.md
-testing.md
-todo.md
-
 # Allow specific mandatory files
 !readme.md
 !license.md

@@ -27,6 +27,10 @@ export function OnboardingWizard({ hasCompletedOnboarding }: { hasCompletedOnboa
     };
 
     const handleGenerate = async () => {
+        if (!profileName.trim()) {
+            setProfileName("My Display");
+        }
+
         setLoading(true);
         try {
             // Create Profile
@@ -65,7 +69,7 @@ export function OnboardingWizard({ hasCompletedOnboarding }: { hasCompletedOnboa
             });
 
             setIsVisible(false);
-            router.refresh();
+            window.location.reload();
         } catch (e) {
             console.error(e);
         } finally {
@@ -163,16 +167,24 @@ export function OnboardingWizard({ hasCompletedOnboarding }: { hasCompletedOnboa
                                     <h3 className="text-xl font-bold text-[var(--foreground)]">Profile Created!</h3>
                                     <p className="text-[var(--muted-foreground)]">Your rotation profile is ready to serve up fresh wallpapers on every page hit.</p>
 
-                                    <div className="p-4 rounded-xl bg-black/30 border border-[var(--border)]">
-                                        <p className="text-xs text-[var(--muted-foreground)] mb-2">Click below to preview your rotation:</p>
-                                        <a
-                                            href={`/${generatedSlug}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="inline-block text-[var(--primary)] hover:text-[var(--primary)]/80 font-mono text-sm break-all underline decoration-[var(--primary)]/30 underline-offset-4 transition-colors"
-                                        >
-                                            http://localhost:6767/{generatedSlug}
-                                        </a>
+                                    <div className="flex flex-col gap-3 mt-4 text-left">
+                                        <div className="p-4 rounded-xl bg-[var(--card)]/50 border border-[var(--border)] flex flex-col gap-1">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Interactive Kiosk Player</span>
+                                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--primary)]/20 text-[var(--primary)] font-medium">Recommended</span>
+                                            </div>
+                                            <span className="text-xs text-[var(--muted-foreground)] mb-2 mt-1">Cross-fading transitions, granular widgets (Clocks, Weather), and smooth animations. Best for Smart TVs, iPads, and Raspberry Pi browsers.</span>
+                                            <a href={`/display/${generatedSlug}`} target="_blank" rel="noreferrer" className="text-[var(--primary)] font-mono text-sm break-all hover:underline transition-colors bg-black/30 w-fit px-2 py-1 rounded">
+                                                {typeof window !== 'undefined' ? window.location.origin : ''}/display/{generatedSlug}
+                                            </a>
+                                        </div>
+                                        <div className="p-4 rounded-xl bg-[var(--card)]/50 border border-[var(--border)] flex flex-col gap-1">
+                                            <span className="text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">Raw Image API Endpoint</span>
+                                            <span className="text-xs text-[var(--muted-foreground)] mb-2 mt-1">Returns a pure, untouched .jpg byte stream. No widgets, no CSS. Best for Wallpaper Engine, Plash, or native OS slideshow tools.</span>
+                                            <a href={`/${generatedSlug}`} target="_blank" rel="noreferrer" className="text-[var(--primary)] font-mono text-sm break-all hover:underline transition-colors bg-black/30 w-fit px-2 py-1 rounded">
+                                                {typeof window !== 'undefined' ? window.location.origin : ''}/{generatedSlug}
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             )}

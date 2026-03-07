@@ -4,12 +4,27 @@ import { useState } from "react";
 import { Monitor, Plus, ExternalLink, Trash2 } from "lucide-react";
 import { CreateProfileModal } from "./CreateProfileModal";
 import { useRouter } from "next/navigation";
-import { ProfileMetadata } from "@/lib/db";
+import { ProfileMetadata, SystemSettings } from "@/lib/db";
 
-export function ProfileListClient({ initialProfiles, categories, luminosities, collections }: { initialProfiles: ProfileMetadata[], categories: string[], luminosities: string[], collections: string[] }) {
+export function ProfileListClient({ initialProfiles, categories, luminosities, collections, settings, localIp }: { initialProfiles: ProfileMetadata[], categories: string[], luminosities: string[], collections: string[], settings?: SystemSettings, localIp?: string }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProfile, setEditingProfile] = useState<ProfileMetadata | null>(null);
     const router = useRouter();
+
+    const getBaseUrl = () => {
+        if (settings?.urlDisplayPreference === 'domain' && settings?.publicDomain) {
+            let domain = settings.publicDomain.trim();
+            if (!domain.startsWith('http')) domain = 'https://' + domain;
+            // Ensure no trailing slash
+            domain = domain.replace(/\/$/, "");
+            return domain;
+        } else if (settings?.urlDisplayPreference === 'local' && localIp) {
+            return `http://${localIp}:6767`;
+        }
+        return '';
+    };
+
+    const baseUrl = getBaseUrl();
 
     const openCreateModal = () => {
         setEditingProfile(null);
@@ -80,7 +95,7 @@ export function ProfileListClient({ initialProfiles, categories, luminosities, c
                                 <h3 className="font-bold text-lg">{profile.name}</h3>
                                 <p className="text-sm text-[var(--muted-foreground)] flex items-center gap-2 mt-1">
                                     <span className="bg-[var(--accent)] text-[var(--accent-foreground)] px-2 py-0.5 rounded text-xs font-mono">
-                                        /{profile.slug}
+                                        {baseUrl}/{profile.slug}
                                     </span>
                                     &bull; {profile.triggerType === 'time' ? `Rotates every ${profile.intervalMinutes} mins` : profile.triggerType === 'request' ? 'Rotates on every request' : 'Random rotation'}
                                     {profile.filters?.collection && (
@@ -90,34 +105,49 @@ export function ProfileListClient({ initialProfiles, categories, luminosities, c
                                     )}
                                 </p>
                             </div>
-                            <div className="flex gap-2">
-                                <a
-                                    href={`/${profile.slug}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="px-4 py-2 rounded-lg border border-[var(--primary)]/30 bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)] hover:text-[var(--primary-foreground)] transition-colors text-sm font-medium flex items-center gap-1.5"
-                                >
-                                    <ExternalLink size={14} />
-                                    View
-                                </a>
-                                <button
-                                    onClick={() => openEditModal(profile)}
-                                    className="px-4 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] transition-colors text-sm font-medium"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(profile.id, profile.name)}
-                                    className="p-2 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-colors"
-                                    title="Delete Profile"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
+                            <div className="flex flex-col gap-2 items-end">
+                                <div className="flex gap-2">
+                                    <a
+                                        href={`${baseUrl}/${profile.slug}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] transition-colors text-xs font-medium flex items-center gap-1.5"
+                                        title="Raw Image API"
+                                    >
+                                        <ExternalLink size={12} />
+                                        Raw Image
+                                    </a>
+                                    <a
+                                        href={`${baseUrl}/display/${profile.slug}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="px-3 py-1.5 rounded-lg border border-[var(--primary)]/50 bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)] hover:text-[var(--primary-foreground)] transition-colors text-xs font-bold flex items-center gap-1.5 shadow-[0_0_10px_var(--primary)]/20"
+                                        title="Interactive Kiosk Player"
+                                    >
+                                        <Monitor size={12} />
+                                        Display Kiosk
+                                    </a>
+                                </div>
+                                <div className="flex gap-2 w-full mt-2">
+                                    <button
+                                        onClick={() => openEditModal(profile)}
+                                        className="flex-1 px-4 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] transition-colors text-sm font-medium"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(profile.id, profile.name)}
+                                        className="p-2 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-colors flex-shrink-0"
+                                        title="Delete Profile"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))
                 )}
-            </div>
+            </div >
 
             <CreateProfileModal
                 isOpen={isModalOpen}

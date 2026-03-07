@@ -126,7 +126,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
 
             return response;
 
-        } catch (error) {
+        } catch {
             console.error(`File physically missing from disk: ${selectedImage.filename}`);
             return new NextResponse("Image broken or missing from disk", { status: 404 });
         }
