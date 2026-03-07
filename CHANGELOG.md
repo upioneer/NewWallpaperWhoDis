@@ -14,6 +14,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Cinematic Transitions:** Native CSS hardware accelerated Fades, Slides, and Ken Burns effects configured remotely from the dashboard without touching the endpoint.
 - **"Dumb Terminal" Backup:** A rock solid organic contingency. The server natively injects `<meta http-equiv="refresh">` instructions into the HTML header if the client's browser disables or fails to execute local React JavaScript polling, assuring rotation occurs regardless of hardware age.
 
+## [v0.4.3] - 2026-03-06
+
+### Documented
+- Refined the primary `README.md` hook to boldly emphasize the benefits of a GUI dashboard over legacy CLI operations.
+- Explicitly tracked and synchronized index capitalization (`README.md` versus `readme.md`) to resolve documentation staging mismatch errors blocking upstream deployment.
+
+## [v0.4.2] - 2026-03-06
+
+### Fixed
+- Injected strict OCI metadata labels (`org.opencontainers.image.source` and `org.opencontainers.image.description`) directly into the production `Dockerfile` runner stage. This forcefully binds the GitHub Container Registry (GHCR) package directly to the root source, dynamically pulling the README contents without permissions failures.
+
+## [v0.4.1] - 2026-03-06
+
+### Added
+- **Marketing Site Firebase Deployment:** Created a dedicated statically compiled Vite+React Marketing Website targeting Firebase Hosting (`newwallpaperwhodis.web.app`) deployed exclusively inside `.agent/apps/Website` via standard git submodules.
+- **Interactive Cyber Grid Component:** Ported the Next.js interactive Node-Grid canvas animation into the raw Vite SPA bundle for the website landing page.
+- **Advanced SEO Injection:** Explicitly declared "New Wallpaper Who Dis" spacing metrics across Open Graph and Twitter Card schemas inside `index.html` to guarantee strict crawler compliance regardless of search syntax.
+
+### Documented
+- Streamlined the "Running the application" Docker onboarding flow.
+- Added explicit OS-specific download hooks directly targeting Docker Desktop binary sources for macOS, Windows, and Linux.
+- Hyperlinked the `docker-compose.yml` text explicitly to prevent confusion with binary installer variants.
+
 ## [v0.4.0] - 2026-03-05
 
 ### Added
