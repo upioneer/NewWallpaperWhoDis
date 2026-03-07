@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Display Kiosk Web Player:** A zero configuration end point (`/display/[slug]`) to broadcast image profiles as comprehensive digital signage.
+- **Widget HUD Engine:** A 3x3 interactive visual grid array located in Settings allowing users to overlay modules.
+- **Clock, Location, Text, & Weather Widgets:** Native modules rendering transparently atop the Kiosk Player (Weather requires OpenWeatherMap API key).
+- **Cinematic Transitions:** Native CSS hardware accelerated Fades, Slides, and Ken Burns effects configured remotely from the dashboard without touching the endpoint.
+- **"Dumb Terminal" Backup:** A rock solid organic contingency. The server natively injects `<meta http-equiv="refresh">` instructions into the HTML header if the client's browser disables or fails to execute local React JavaScript polling, assuring rotation occurs regardless of hardware age.
+
 ## [v0.4.0] - 2026-03-05
 
 ### Added
