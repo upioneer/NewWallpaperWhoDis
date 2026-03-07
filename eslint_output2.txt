@@ -1,4 +1,0 @@
-
-> new-wallpaper-who-dis@0.4.0 lint
-> eslint
-
