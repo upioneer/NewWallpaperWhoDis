@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.6.0] - 2026-03-06
+
+### Added
+- **Network Auto-Discovery & Pairing:** Integrated `qrcode.react` to generate dynamic High-Density QR Codes natively inside the Profiles UI, enabling instant "zero-IP" pairing across external displays and mobile devices.
+- **Container Version Polling:** Built a silent background GitHub API hook inside the Dashboard tracking the remote tags list against the local Node.js server container. 
+- **Update Notifications:** Implemented a new unobtrusive, glassmorphic UI toast banner that slides in if the local image drifts out of date, expressly featuring a click-to-exit cache logic.
+- **Versioning Documentation:** Officially documented and integrated the `[x].[y].[z]` semantic definitions directly into the `github.md` workflows constraint specifications.
+
+### Changed
+- Refactored ambiguous button terminology on the Profiles dashboard to explicitly read "Raw API Stream" and "Launch Display Kiosk" for UI structural clarity.
+- **Git Hierarchy Refactor**: Forcibly relocated the entire Marketing Website Git Submodule footprint from `.agent/apps` directly to `apps/Website` at the project's root level, restructuring the deep `.git/modules` cache pointers manually.
+
 ## [v0.5.0] - 2026-03-06
 
 ### Added
@@ -28,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.4.1] - 2026-03-06
 
 ### Added
-- **Marketing Site Firebase Deployment:** Created a dedicated statically compiled Vite+React Marketing Website targeting Firebase Hosting (`newwallpaperwhodis.web.app`) deployed exclusively inside `.agent/apps/Website` via standard git submodules.
+- **Marketing Site Firebase Deployment:** Created a dedicated statically compiled Vite+React Marketing Website targeting Firebase Hosting (`newwallpaperwhodis.web.app`) deployed exclusively inside `apps/Website` via standard git submodules.
 - **Interactive Cyber Grid Component:** Ported the Next.js interactive Node-Grid canvas animation into the raw Vite SPA bundle for the website landing page.
 - **Advanced SEO Injection:** Explicitly declared "New Wallpaper Who Dis" spacing metrics across Open Graph and Twitter Card schemas inside `index.html` to guarantee strict crawler compliance regardless of search syntax.
 
