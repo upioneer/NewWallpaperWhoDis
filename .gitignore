@@ -48,7 +48,7 @@ next-env.d.ts
 # Explicit user project configurations
 .agent/
 .agent
-/project artifacts/
+/project_details/
 /scripts/scaffold.ps1
 # Allow specific mandatory files
 !readme.md
