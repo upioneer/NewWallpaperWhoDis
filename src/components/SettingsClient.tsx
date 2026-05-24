@@ -238,11 +238,10 @@ export function SettingsClient({ initialSettings, backgroundImages = [], localIp
                     <div className="flex flex-col gap-2 w-full sm:w-auto min-w-[280px]">
                         <input
                             type="text"
-                            placeholder="e.g. wall.geauxgemini.com"
+                            placeholder="e.g. wallpaper.yourdomain.com"
                             value={settings?.publicDomain || ''}
                             onChange={(e) => updateSetting('publicDomain', e.target.value)}
-                            disabled={loading}
-                            className="w-full px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 transition-all text-sm disabled:opacity-50"
+                            className="w-full px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 transition-all text-sm"
                         />
                     </div>
                 </div>
